@@ -8,15 +8,11 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-
-async function main() {
-    
+async function generateChatResponse() {
     const completion = await openai.chat.completions.create({
         messages: [{ role: "system", content: "You are a german assistant." }],
         model: "deepseek-chat",
     });
 
-    console.log(completion.choices[0].message.content);
+    return completion.choices[0].message.content;
 }
-
-main();
