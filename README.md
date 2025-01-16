@@ -1,3 +1,17 @@
+# TODO Note
+
+- [ ] 使用 Electron 创建一个简单的应用程序
+- [ ] 搭建一个 AI 对话单元
+
+# Note
+
+npm install openai
+
+
+
+
+# Archive
+
 以下是创建 Electron.js 应用的基本步骤：
 
 1. 首先确保安装了 Node.js，然后创建一个新的项目目录：
