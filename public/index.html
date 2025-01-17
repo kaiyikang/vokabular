@@ -3,9 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello Electron!</title>
+    <style>
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello Electron!</h1>
+    <div>
+        <h1>Vokabular</h1>
+        <textarea id="inputSentence" placeholder="Enter your sentence here"></textarea>
+        <textarea id="outputExplanation" placeholder="Output" readonly></textarea>
+    </div>
+
     <script src="../src/renderer.js"></script>
 </body>
 </html>

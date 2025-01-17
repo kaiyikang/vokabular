@@ -13,7 +13,11 @@ function createWindow () {
   })
 
   // 加载 index.html
-  win.loadFile('public/index.html')
+  win.loadFile('public/index.html');
+
+  win.webContents.on('console-message', (event, level, message) => {
+    console.log(`[Renderer] ${level}: ${message}`);
+  });
 }
 
 app.whenReady().then(() => {
