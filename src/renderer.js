@@ -1,14 +1,23 @@
 
-// 这里可以写渲染进程的代码
 console.log('Hello from renderer process!')
 const inputSentence = document.getElementById('inputSentence');
 const outputExplanation = document.getElementById('outputExplanation');
+const selectedWordDisplay = document.getElementById('selectedWordDisplay');
 
-// 实时同步输入框内容到输出框
 inputSentence.addEventListener('input', (event) => {
     const sentence = event.target.value;
-    outputExplanation.value = sentence;
+    const singleLineText = sentence.replace(/[\r\n]+/g, ' ');
+    outputExplanation.value = singleLineText;
 });
 
-// 保持输出框为只读状态
+inputSentence.addEventListener('dblclick', (event) => {
+    const selectedText = window.getSelection().toString();
+
+    if(selectedText.trim() !== '') {
+        console.log(event.target.value)
+        const selectedWord = selectedText.trim();
+        selectedWordDisplay.value = selectedWord;
+    }
+});
+
 outputExplanation.setAttribute('readonly', true);

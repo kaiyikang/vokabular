@@ -7,14 +7,16 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false 
     }
   })
 
   // 加载 index.html
   win.loadFile('public/index.html');
 
+  // 监听渲染进程的控制台消息
   win.webContents.on('console-message', (event, level, message) => {
     console.log(`[Renderer] ${level}: ${message}`);
   });
