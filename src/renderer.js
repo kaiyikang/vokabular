@@ -3,15 +3,18 @@
 const inputSentence = document.getElementById('inputSentence');
 const outputExplanation = document.getElementById('outputExplanation');
 const selectedWordDisplay = document.getElementById('selectedWordDisplay');
+const statusBar = document.getElementById('statusBar');
 
 // 锁定界面元素
 function lockUI() {
     inputSentence.disabled = true;
     outputExplanation.disabled = true;
     selectedWordDisplay.disabled = true;
-    inputSentence.style.backgroundColor = '#f0f0f0';  // 文本框变灰色
+    inputSentence.style.backgroundColor = '#f0f0f0';
     outputExplanation.style.backgroundColor = '#f0f0f0';
     selectedWordDisplay.style.backgroundColor = '#f0f0f0';
+    statusBar.textContent = 'Generating...';
+
 }
 
 // 解锁界面元素
@@ -19,9 +22,11 @@ function unlockUI() {
     inputSentence.disabled = false;
     outputExplanation.disabled = false;
     selectedWordDisplay.disabled = false;
-    inputSentence.style.backgroundColor = '#ffffff';  // 恢复白色背景
+    inputSentence.style.backgroundColor = '#ffffff';
     outputExplanation.style.backgroundColor = '#ffffff';
     selectedWordDisplay.style.backgroundColor = '#ffffff';
+    statusBar.textContent = 'Ready';
+
 }
 
 
@@ -34,8 +39,6 @@ inputSentence.addEventListener('input', (event) => {
 
 inputSentence.addEventListener('dblclick', async (event) => {
     const selectedText = window.getSelection().toString();
-
-
     if(selectedText.trim() !== '') {
         const selectedWord = selectedText.trim();
         selectedWordDisplay.value = selectedWord;
