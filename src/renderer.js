@@ -22,7 +22,7 @@ function unlockUI() {
     inputSentence.style.backgroundColor = "#ffffff";
     outputExplanation.style.backgroundColor = "#ffffff";
     selectedWordDisplay.style.backgroundColor = "#ffffff";
-    statusBar.textContent = "Ready";
+    statusBar.textContent = "Done";
 }
 
 inputSentence.addEventListener("input", (event) => {
@@ -32,14 +32,18 @@ inputSentence.addEventListener("input", (event) => {
 });
 
 inputSentence.addEventListener("dblclick", async (event) => {
-    const selectedText = window.getSelection().toString();
-    if (selectedText.trim() !== "") {
-        const selectedWord = selectedText.trim();
+    const trimmedText = window.getSelection().toString().trim();
+
+    if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
+        const selectedWord = trimmedText;
+        const inputPhrase = event.target.value.trim();
+
         selectedWordDisplay.value = selectedWord;
 
         try {
             lockUI();
             const response = await window.api.generateChatResponse(
+                inputPhrase,
                 selectedWord
             );
             outputExplanation.value = response;
