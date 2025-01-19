@@ -1,4 +1,4 @@
-const deepseekClient = require("./openApiClient");
+const deepseekClient = require("../api/openApiClient");
 
 async function generateWordExplanation(phrase = "", word = "") {
     const completion = await deepseekClient.chat.completions.create({

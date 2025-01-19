@@ -1,5 +1,5 @@
 const { contextBridge } = require("electron");
-const { generateWordExplanation } = require("./api/chatService");
+const { generateWordExplanation } = require("./services/chatService");
 
 contextBridge.exposeInMainWorld("api", {
     generateWordExplanation: async (queriedSentence, queriedWord) => {
