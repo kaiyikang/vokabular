@@ -42,7 +42,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
 
         try {
             lockUI();
-            const response = await window.api.generateChatResponse(
+            const response = await window.api.generateWordExplanation(
                 inputPhrase,
                 selectedWord
             );

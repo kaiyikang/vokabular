@@ -1,27 +1,18 @@
-const { OpenAI } = require('openai');
-const dotenv = require('dotenv');
-dotenv.config();
+const openai = require('./openApiClient');
 
-const openai = new OpenAI({
-    baseURL: process.env.BASE_URL,
-    apiKey: process.env.OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true
-});
-
-async function generateChatResponse(queriedPhrase="", queriedWord="") {
+async function generateWordExplanation(phrase="", word="") {
     const completion = await openai.chat.completions.create({
         messages: [
-            { role: "system", content: "You are a german assistant." },
             { role: "user", content: `You are tasked with providing a brief Chinese explanation for a specific German word within a given sentence. Follow these steps:
 
 1. You will be given a German sentence:
 <german_sentence>
-${queriedPhrase}
+${phrase}
 </german_sentence>
 
 2. The word to be explained is:
 <target_word>
-${queriedWord}
+${word}
 </target_word>
 
 3. Your task is to:
@@ -48,5 +39,5 @@ Remember to keep your explanation short and to the point, addressing only the me
 }
 
 module.exports = {
-    generateChatResponse
+    generateWordExplanation
 }
