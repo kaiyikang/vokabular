@@ -1,9 +1,11 @@
-const openai = require('./openApiClient');
+const deepseekClient = require("./openApiClient");
 
-async function generateWordExplanation(phrase="", word="") {
-    const completion = await openai.chat.completions.create({
+async function generateWordExplanation(phrase = "", word = "") {
+    const completion = await deepseekClient.chat.completions.create({
         messages: [
-            { role: "user", content: `You are tasked with providing a brief Chinese explanation for a specific German word within a given sentence. Follow these steps:
+            {
+                role: "user",
+                content: `You are tasked with providing a brief Chinese explanation for a specific German word within a given sentence. Follow these steps:
 
 1. You will be given a German sentence:
 <german_sentence>
@@ -30,14 +32,15 @@ ${word}
    [Your concise Chinese explanation here]
    </explanation>
 
-Remember to keep your explanation short and to the point, addressing only the meaning of the target word in the context of the given sentence.` }
+Remember to keep your explanation short and to the point, addressing only the meaning of the target word in the context of the given sentence.`,
+            },
         ],
-        model: "deepseek-chat"
+        model: "deepseek-chat",
     });
 
     return completion.choices[0].message.content;
 }
 
 module.exports = {
-    generateWordExplanation
-}
+    generateWordExplanation,
+};
