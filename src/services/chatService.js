@@ -1,4 +1,13 @@
-const deepseekClient = require("../api/openApiClient");
+const { OpenAI } = require("openai");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const deepseekClient = new OpenAI({
+    baseURL: process.env.DEEPSEEK_BASE_URL,
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    dangerouslyAllowBrowser: true,
+});
+
 
 async function generateWordExplanation(phrase = "", word = "") {
     const completion = await deepseekClient.chat.completions.create({
