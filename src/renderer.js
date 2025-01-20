@@ -42,7 +42,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
 
         try {
             lockUI();
-            const response = await window.api.generateWordExplanation(
+            const response = await window.services.chat.generateWordExplanation(
                 inputPhrase,
                 selectedWord
             );
@@ -56,3 +56,9 @@ inputSentence.addEventListener("dblclick", async (event) => {
 });
 
 outputExplanation.setAttribute("readonly", true);
+
+
+// testing
+window.services.anki.getDeckNames().then((deckNames) => {
+    console.log(deckNames);
+});

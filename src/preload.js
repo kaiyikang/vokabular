@@ -1,8 +1,18 @@
 const { contextBridge } = require("electron");
 const { generateWordExplanation } = require("./services/chatService");
+const { AnkiClient } = require("./services/ankiClient");
 
-contextBridge.exposeInMainWorld("api", {
-    generateWordExplanation: async (queriedSentence, queriedWord) => {
+
+
+const services = {
+    chat: {generateWordExplanation: async (queriedSentence, queriedWord) => {
         return await generateWordExplanation(queriedSentence, queriedWord);
-    },
-});
+    }},
+    anki: {
+        getDeckNames: async () => {
+            return await AnkiClient.getDeckNames();
+        }
+    }
+}
+
+contextBridge.exposeInMainWorld("services", services);
