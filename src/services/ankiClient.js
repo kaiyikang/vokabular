@@ -1,7 +1,7 @@
 const ANKI_CONNECT_URL = "http://localhost:8765";
 
-async function invokeAnki(action, params={}) {
-    try{
+async function invokeAnki(action, params = {}) {
+    try {
         const response = await fetch(ANKI_CONNECT_URL, {
             method: "POST",
             headers: {
@@ -15,19 +15,30 @@ async function invokeAnki(action, params={}) {
         });
 
         const result = await response.json();
-        if(result.error) {
+        if (result.error) {
             throw new Error(result.error);
         }
-
         return result.result;
-    } catch(error) {
-        console.error('Anki connect error:', error);
+    } catch (error) {
+        console.error("Anki connect error:", error);
     }
 }
 
 const AnkiClient = {
     getDeckNames: () => invokeAnki("deckNames"),
+    getCardsByDeckName: (deckName) => invokeAnki("findCards", { query: `deck:${deckName}`}),
+    cardsInfo: (cards) => invokeAnki("cardsInfo", { cards: cards }),
 };
+
+// 测试代码
+(async () => {
+    const abc = await AnkiClient.getCardsByDeckName("Deutsch");
+    AnkiClient.cardsInfo(abc).then((cards) => {
+        cards.map((card) => {
+            console.log(card.fields.Word.value);
+        });
+    });
+})();
 
 module.exports = {
     AnkiClient,

@@ -8,7 +8,6 @@ const deepseekClient = new OpenAI({
     dangerouslyAllowBrowser: true,
 });
 
-
 async function generateWordExplanation(phrase = "", word = "") {
     const completion = await deepseekClient.chat.completions.create({
         messages: [

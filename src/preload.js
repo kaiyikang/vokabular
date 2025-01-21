@@ -11,7 +11,8 @@ const services = {
     anki: {
         getDeckNames: async () => {
             return await AnkiClient.getDeckNames();
-        }
+        },
+        
     }
 }
 
