@@ -69,7 +69,7 @@ module.exports = {
 
 // 测试代码
 (async () => {
-    const health = await ankiHealthCheck();
+    // const health = await ankiHealthCheck();
     // const cardIds = await AnkiClient.getCardsByDeckName("Deutsch");
     // const models = await AnkiClient.getModelNames();
     // console.log(models);

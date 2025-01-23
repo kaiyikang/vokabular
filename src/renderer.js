@@ -3,6 +3,18 @@ const outputExplanation = document.getElementById("outputExplanation");
 const selectedWordDisplay = document.getElementById("selectedWordDisplay");
 const statusBar = document.getElementById("statusBar");
 
+// 监听输入框的输入事件
+document.addEventListener('DOMContentLoaded', () => {
+    const settingBtn = document.getElementById('settingBtn');
+    if (settingBtn) {
+        settingBtn.addEventListener('click', () => {
+            window.electronAPI.openSettings();
+        });
+    } else {
+        console.error('Setting button not found');
+    }
+});
+
 // 锁定界面元素
 function lockUI() {
     inputSentence.disabled = true;

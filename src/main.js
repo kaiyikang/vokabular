@@ -1,8 +1,7 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
 function createWindow () {
-
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -21,6 +20,22 @@ function createWindow () {
     console.log(`[Renderer] ${level}: ${message}`);
   });
 }
+
+// 监听渲染进程的打开新窗口请求
+ipcMain.on('show-settings', () => {
+  const newWindow = new BrowserWindow({
+      width: 600,
+      height: 400,
+      webPreferences: {
+          sandbox: false,
+          preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: false,
+          contextIsolation: true,
+      }
+  });
+
+  newWindow.loadFile('public/settings.html');
+});
 
 app.whenReady().then(() => {
   createWindow()
