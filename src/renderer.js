@@ -2,8 +2,9 @@ const inputSentence = document.getElementById("inputSentence");
 const outputExplanation = document.getElementById("outputExplanation");
 const selectedWordDisplay = document.getElementById("selectedWordDisplay");
 const statusBar = document.getElementById("statusBar");
+const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
 
-// 监听输入框的输入事件
+// Setting 监听输入框的输入事件
 document.addEventListener('DOMContentLoaded', () => {
     const settingBtn = document.getElementById('settingBtn');
     if (settingBtn) {
@@ -20,6 +21,7 @@ function lockUI() {
     inputSentence.disabled = true;
     outputExplanation.disabled = true;
     selectedWordDisplay.disabled = true;
+    saveToAnkiBtn.disabled = true;
     inputSentence.style.backgroundColor = "#f0f0f0";
     outputExplanation.style.backgroundColor = "#f0f0f0";
     selectedWordDisplay.style.backgroundColor = "#f0f0f0";
@@ -31,6 +33,7 @@ function unlockUI() {
     inputSentence.disabled = false;
     outputExplanation.disabled = false;
     selectedWordDisplay.disabled = false;
+    saveToAnkiBtn.disabled = false;
     inputSentence.style.backgroundColor = "#ffffff";
     outputExplanation.style.backgroundColor = "#ffffff";
     selectedWordDisplay.style.backgroundColor = "#ffffff";
@@ -44,13 +47,13 @@ inputSentence.addEventListener("input", (event) => {
 });
 
 inputSentence.addEventListener("dblclick", async (event) => {
+    // 获取选中的文本
     const trimmedText = window.getSelection().toString().trim();
-
+    // 如果选中的文本不为空且不是标点符号
     if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
         const selectedWord = trimmedText;
         const inputPhrase = event.target.value.trim();
 
-        selectedWordDisplay.value = selectedWord;
 
         try {
             lockUI();
@@ -58,7 +61,8 @@ inputSentence.addEventListener("dblclick", async (event) => {
                 inputPhrase,
                 selectedWord
             );
-            outputExplanation.value = response;
+            selectedWordDisplay.value = response.match(/<extracted_combination>([\s\S]*?)<\/extracted_combination>/)?.[1]?.trim() || selectedWord;
+            outputExplanation.value = response.match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]?.trim() || response;;
         } catch (error) {
             outputExplanation.value = `Error: ${error.message}`;
         } finally {
@@ -67,10 +71,12 @@ inputSentence.addEventListener("dblclick", async (event) => {
     }
 });
 
-outputExplanation.setAttribute("readonly", true);
-
+saveToAnkiBtn.addEventListener('click', async (event) => {
+    const info = await window.services.anki.getDeckNames();
+    console.log(info);
+});
 
 // testing
-window.services.anki.getDeckNames().then((deckNames) => {
-    console.log(deckNames);
-});
+// window.services.anki.getDeckNames().then((deckNames) => {
+//     console.log(deckNames);
+// });
