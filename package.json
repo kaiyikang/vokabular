@@ -15,6 +15,7 @@
     "electron-reloader": "^1.2.3"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.2",
     "@google/generative-ai": "^0.21.0",
     "openai": "^4.78.1"
   }
