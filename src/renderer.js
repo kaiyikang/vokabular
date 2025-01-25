@@ -43,7 +43,6 @@ function unlockUI() {
 inputSentence.addEventListener("input", (event) => {
     const sentence = event.target.value;
     const singleLineText = sentence.replace(/[\r\n]+/g, " ");
-    outputExplanation.value = singleLineText;
     inputSentence.value = singleLineText;
 });
 
