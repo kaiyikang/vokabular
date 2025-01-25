@@ -1,0 +1,223 @@
+diff --git a/src/api/ankiApi.js b/src/api/ankiApi.js
+index 7a87def..5b72e30 100644
+--- a/src/api/ankiApi.js
++++ b/src/api/ankiApi.js
+@@ -50,7 +50,6 @@ async function invokeAnki(action, params = {}) {
+     }
+ }
+ 
+-
+ // Deck 相关函数
+ async function getDeckNames() {
+     return invokeAnki("deckNames");
+@@ -60,6 +59,11 @@ async function createDeck(deckName) {
+     return invokeAnki("createDeck", { deck: deckName });
+ }
+ 
++async function getIfDeckExists(deckName) {
++    const deckNames = await getDeckNames();
++    return deckNames.includes(deckName);
++}
++
+ // Model 相关函数
+ async function getModelNames() {
+     return invokeAnki("modelNames");
+@@ -84,32 +88,32 @@ async function getNotesInfo(notes) {
+ }
+ 
+ // 确保 Deck 存在
+-async function ensureDeckExists(deckName) {
+-    try {
+-        const deckNames = await getDeckNames();
+-        if (!deckNames.includes(deckName)) {
+-            await createDeck(deckName);
+-            console.log(`Deck "${deckName}" created.`);
+-        } else {
+-            console.log(`Deck "${deckName}" already exists.`);
+-        }
+-    } catch (error) {
+-        console.error("Error ensuring deck exists:", error.message);
+-        throw error; // 抛出错误以便上层处理
+-    }
+-}
+-
++// async function ensureDeckExists(deckName) {
++//     try {
++//         const deckNames = await getDeckNames();
++//         if (!deckNames.includes(deckName)) {
++//             await createDeck(deckName);
++//             console.log(`Deck "${deckName}" created.`);
++//         } else {
++//             console.log(`Deck "${deckName}" already exists.`);
++//         }
++//     } catch (error) {
++//         console.error("Error ensuring deck exists:", error.message);
++//         throw error; // 抛出错误以便上层处理
++//     }
++// }
+ 
+ // 导出 AnkiApi 对象
+ const AnkiApi = {
+-    getDeckNames,
+     createDeck,
++    getIfDeckExists,
++    getDeckNames,
+     getModelNames,
+     getModelTemplatesByName,
+     getCardsByDeckName,
+     getCardsInfo,
+     getNotesInfo,
+-    ensureDeckExists,
++    // ensureDeckExists,
+ };
+ 
+ module.exports = {
+@@ -121,7 +125,7 @@ module.exports = {
+     try {
+         const deckName = "testDeck";
+         await AnkiApi.ensureDeckExists(deckName);
+-    } catch(error) {
++    } catch (error) {
+         console.error("Error:", error.message);
+     }
+ })();
+diff --git a/src/preload.js b/src/preload.js
+index e26cac7..a27aca6 100644
+--- a/src/preload.js
++++ b/src/preload.js
+@@ -1,24 +1,23 @@
+ const { contextBridge, ipcRenderer } = require("electron");
+ const { generateWordExplanation } = require("./services/chatService");
+-// const { AnkiClient } = require("./services/ankiClient");
+-
+-
++const { addNoteToAnki } = require("./services/ankiService");
+ 
+ const services = {
+-    chat: {generateWordExplanation: async (queriedSentence, queriedWord) => {
+-        return await generateWordExplanation(queriedSentence, queriedWord);
+-    }},
+-    // anki: {
+-    //     getDeckNames: async () => {
+-    //         return await AnkiClient.getDeckNames();
+-    //     },
+-
+-    // }
+-}
++    chat: {
++        generateWordExplanation: async (queriedSentence, queriedWord) => {
++            return await generateWordExplanation(queriedSentence, queriedWord);
++        },
++    },
++    anki: {
++        addNoteToAnki: async () => {
++            return await addNoteToAnki();
++        },
++    },
++};
+ 
+ const electronAPI = {
+-    openSettings: () => ipcRenderer.send('show-settings')
+-}
++    openSettings: () => ipcRenderer.send("show-settings"),
++};
+ 
+ contextBridge.exposeInMainWorld("services", services);
+-contextBridge.exposeInMainWorld("electronAPI", electronAPI);
+\ No newline at end of file
++contextBridge.exposeInMainWorld("electronAPI", electronAPI);
+diff --git a/src/renderer.js b/src/renderer.js
+index 8190267..8cd2f96 100644
+--- a/src/renderer.js
++++ b/src/renderer.js
+@@ -5,14 +5,14 @@ const statusBar = document.getElementById("statusBar");
+ const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
+ 
+ // Setting 监听输入框的输入事件
+-document.addEventListener('DOMContentLoaded', () => {
+-    const settingBtn = document.getElementById('settingBtn');
++document.addEventListener("DOMContentLoaded", () => {
++    const settingBtn = document.getElementById("settingBtn");
+     if (settingBtn) {
+-        settingBtn.addEventListener('click', () => {
++        settingBtn.addEventListener("click", () => {
+             window.electronAPI.openSettings();
+         });
+     } else {
+-        console.error('Setting button not found');
++        console.error("Setting button not found");
+     }
+ });
+ 
+@@ -53,16 +53,22 @@ inputSentence.addEventListener("dblclick", async (event) => {
+     if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
+         const selectedWord = trimmedText;
+         const inputPhrase = event.target.value.trim();
+-
+-
+         try {
+             lockUI();
+             const response = await window.services.chat.generateWordExplanation(
+                 inputPhrase,
+                 selectedWord
+             );
+-            selectedWordDisplay.value = response.match(/<extracted_combination>([\s\S]*?)<\/extracted_combination>/)?.[1]?.trim() || selectedWord;
+-            outputExplanation.value = response.match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]?.trim() || response;;
++            selectedWordDisplay.value =
++                response
++                    .match(
++                        /<extracted_combination>([\s\S]*?)<\/extracted_combination>/
++                    )?.[1]
++                    ?.trim() || selectedWord;
++            outputExplanation.value =
++                response
++                    .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
++                    ?.trim() || response;
+         } catch (error) {
+             outputExplanation.value = `Error: ${error.message}`;
+         } finally {
+@@ -71,7 +77,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
+     }
+ });
+ 
+-saveToAnkiBtn.addEventListener('click', async (event) => {
++saveToAnkiBtn.addEventListener("click", async (event) => {
+     const info = await window.services.anki.getDeckNames();
+     console.log(info);
+ });
+@@ -79,4 +85,4 @@ saveToAnkiBtn.addEventListener('click', async (event) => {
+ // testing
+ // window.services.anki.getDeckNames().then((deckNames) => {
+ //     console.log(deckNames);
+-// });
+\ No newline at end of file
++// });
+diff --git a/src/services/ankiService.js b/src/services/ankiService.js
+index 8175b68..98bcdaf 100644
+--- a/src/services/ankiService.js
++++ b/src/services/ankiService.js
+@@ -1,5 +1,5 @@
+ // API: https://foosoft.net/projects/anki-connect/index.html
+-
++const { createDeck, getIfDeckExists, getDeckNames } = require("../api/ankiApi");
+ const ANKI_DEFAULT_DECK = "TEST_DEFAULT";
+ const ANKI_DEFAULT_MODEL = {
+     modelName: "vokabular-model",
+@@ -23,8 +23,13 @@ const ANKI_DEFAULT_MODEL = {
+     ],
+ };
+ 
+-
++async function addNoteToAnki() {
++    // 1. 输入想要添加的note，参考
++    // 2. 检查note是否符合条件
++    // 3. 确保deck存在
++    // 4. 保存note
++}
+ 
+ module.exports = {
+-
+-}
+\ No newline at end of file
++    addNoteToAnki,
++};

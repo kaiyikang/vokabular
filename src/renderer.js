@@ -5,14 +5,14 @@ const statusBar = document.getElementById("statusBar");
 const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
 
 // Setting 监听输入框的输入事件
-document.addEventListener('DOMContentLoaded', () => {
-    const settingBtn = document.getElementById('settingBtn');
+document.addEventListener("DOMContentLoaded", () => {
+    const settingBtn = document.getElementById("settingBtn");
     if (settingBtn) {
-        settingBtn.addEventListener('click', () => {
+        settingBtn.addEventListener("click", () => {
             window.electronAPI.openSettings();
         });
     } else {
-        console.error('Setting button not found');
+        console.error("Setting button not found");
     }
 });
 
@@ -53,16 +53,22 @@ inputSentence.addEventListener("dblclick", async (event) => {
     if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
         const selectedWord = trimmedText;
         const inputPhrase = event.target.value.trim();
-
-
         try {
             lockUI();
             const response = await window.services.chat.generateWordExplanation(
                 inputPhrase,
                 selectedWord
             );
-            selectedWordDisplay.value = response.match(/<extracted_combination>([\s\S]*?)<\/extracted_combination>/)?.[1]?.trim() || selectedWord;
-            outputExplanation.value = response.match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]?.trim() || response;;
+            selectedWordDisplay.value =
+                response
+                    .match(
+                        /<extracted_combination>([\s\S]*?)<\/extracted_combination>/
+                    )?.[1]
+                    ?.trim() || selectedWord;
+            outputExplanation.value =
+                response
+                    .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
+                    ?.trim() || response;
         } catch (error) {
             outputExplanation.value = `Error: ${error.message}`;
         } finally {
@@ -71,7 +77,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
     }
 });
 
-saveToAnkiBtn.addEventListener('click', async (event) => {
+saveToAnkiBtn.addEventListener("click", async (event) => {
     const info = await window.services.anki.getDeckNames();
     console.log(info);
 });

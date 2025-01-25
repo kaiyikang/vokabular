@@ -50,7 +50,6 @@ async function invokeAnki(action, params = {}) {
     }
 }
 
-
 // Deck 相关函数
 async function getDeckNames() {
     return invokeAnki("deckNames");
@@ -58,6 +57,11 @@ async function getDeckNames() {
 
 async function createDeck(deckName) {
     return invokeAnki("createDeck", { deck: deckName });
+}
+
+async function getIfDeckExists(deckName) {
+    const deckNames = await getDeckNames();
+    return deckNames.includes(deckName);
 }
 
 // Model 相关函数
@@ -84,32 +88,32 @@ async function getNotesInfo(notes) {
 }
 
 // 确保 Deck 存在
-async function ensureDeckExists(deckName) {
-    try {
-        const deckNames = await getDeckNames();
-        if (!deckNames.includes(deckName)) {
-            await createDeck(deckName);
-            console.log(`Deck "${deckName}" created.`);
-        } else {
-            console.log(`Deck "${deckName}" already exists.`);
-        }
-    } catch (error) {
-        console.error("Error ensuring deck exists:", error.message);
-        throw error; // 抛出错误以便上层处理
-    }
-}
-
+// async function ensureDeckExists(deckName) {
+//     try {
+//         const deckNames = await getDeckNames();
+//         if (!deckNames.includes(deckName)) {
+//             await createDeck(deckName);
+//             console.log(`Deck "${deckName}" created.`);
+//         } else {
+//             console.log(`Deck "${deckName}" already exists.`);
+//         }
+//     } catch (error) {
+//         console.error("Error ensuring deck exists:", error.message);
+//         throw error; // 抛出错误以便上层处理
+//     }
+// }
 
 // 导出 AnkiApi 对象
 const AnkiApi = {
-    getDeckNames,
     createDeck,
+    getIfDeckExists,
+    getDeckNames,
     getModelNames,
     getModelTemplatesByName,
     getCardsByDeckName,
     getCardsInfo,
     getNotesInfo,
-    ensureDeckExists,
+    // ensureDeckExists,
 };
 
 module.exports = {
@@ -121,7 +125,7 @@ module.exports = {
     try {
         const deckName = "testDeck";
         await AnkiApi.ensureDeckExists(deckName);
-    } catch(error) {
+    } catch (error) {
         console.error("Error:", error.message);
     }
 })();

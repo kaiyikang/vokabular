@@ -1,5 +1,5 @@
 // API: https://foosoft.net/projects/anki-connect/index.html
-
+const { createDeck, getIfDeckExists, getDeckNames } = require("../api/ankiApi");
 const ANKI_DEFAULT_DECK = "TEST_DEFAULT";
 const ANKI_DEFAULT_MODEL = {
     modelName: "vokabular-model",
@@ -23,8 +23,13 @@ const ANKI_DEFAULT_MODEL = {
     ],
 };
 
-
+async function addNoteToAnki() {
+    // 1. 输入想要添加的note，参考
+    // 2. 检查note是否符合条件
+    // 3. 确保deck存在
+    // 4. 保存note
+}
 
 module.exports = {
-
-}
+    addNoteToAnki,
+};
