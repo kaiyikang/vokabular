@@ -9,8 +9,8 @@ const services = {
         },
     },
     anki: {
-        addNoteToAnki: async () => {
-            return await addNoteToAnki();
+        addNoteToAnki: async (fields) => {
+            return await addNoteToAnki(fields);
         },
     },
 };

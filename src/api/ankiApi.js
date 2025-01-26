@@ -59,11 +59,6 @@ async function createDeck(deckName) {
     return invokeAnki("createDeck", { deck: deckName });
 }
 
-async function getIfDeckExists(deckName) {
-    const deckNames = await getDeckNames();
-    return deckNames.includes(deckName);
-}
-
 // Model 相关函数
 async function getModelNames() {
     return invokeAnki("modelNames");
@@ -71,6 +66,10 @@ async function getModelNames() {
 
 async function getModelTemplatesByName(modelName) {
     return invokeAnki("modelTemplates", { modelName });
+}
+
+async function createModel(params) {
+    return invokeAnki("createModel", params);
 }
 
 // Card 相关函数
@@ -85,6 +84,29 @@ async function getCardsInfo(cards) {
 // Note 相关函数
 async function getNotesInfo(notes) {
     return invokeAnki("notesInfo", { notes });
+}
+
+async function addNote(deckName, modelName, fields) {
+    return invokeAnki("addNote", {
+        note: {
+            deckName: deckName,
+            modelName: modelName,
+            fields: fields,
+            options: {
+                allowDuplicate: false,
+                duplicateScope: "deck",
+                duplicateScopeOptions: {
+                    deckName: "Default",
+                    checkChildren: false,
+                    checkAllModels: false,
+                },
+            },
+            tags: ["vokabular"],
+            audio: [],
+            video: [],
+            picture: [],
+        },
+    });
 }
 
 // 确保 Deck 存在
@@ -104,28 +126,18 @@ async function getNotesInfo(notes) {
 // }
 
 // 导出 AnkiApi 对象
-const AnkiApi = {
+const ankiApi = {
     createDeck,
-    getIfDeckExists,
     getDeckNames,
     getModelNames,
     getModelTemplatesByName,
+    createModel,
     getCardsByDeckName,
     getCardsInfo,
     getNotesInfo,
-    // ensureDeckExists,
+    addNote,
 };
 
 module.exports = {
-    AnkiApi,
+    ankiApi,
 };
-
-// 测试代码
-(async () => {
-    try {
-        const deckName = "testDeck";
-        await AnkiApi.ensureDeckExists(deckName);
-    } catch (error) {
-        console.error("Error:", error.message);
-    }
-})();
