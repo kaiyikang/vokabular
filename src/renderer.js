@@ -25,7 +25,7 @@ function lockUI() {
     inputSentence.style.backgroundColor = "#f0f0f0";
     outputExplanation.style.backgroundColor = "#f0f0f0";
     selectedWordDisplay.style.backgroundColor = "#f0f0f0";
-    statusBar.textContent = "Generating...";
+    statusBar.textContent = "AI Generating...";
 }
 
 // 解锁界面元素
@@ -47,9 +47,7 @@ inputSentence.addEventListener("input", (event) => {
 });
 
 inputSentence.addEventListener("dblclick", async (event) => {
-    // 获取选中的文本
     const trimmedText = window.getSelection().toString().trim();
-    // 如果选中的文本不为空且不是标点符号
     if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
         const selectedWord = trimmedText;
         const inputPhrase = event.target.value.trim();
@@ -70,7 +68,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
                     .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
                     ?.trim() || response;
         } catch (error) {
-            outputExplanation.value = `Error: ${error.message}`;
+            statusBar.textContent = `Error: ${error.message}`;
         } finally {
             unlockUI();
         }
@@ -78,11 +76,11 @@ inputSentence.addEventListener("dblclick", async (event) => {
 });
 
 saveToAnkiBtn.addEventListener("click", async (event) => {
-    const info = await window.services.anki.getDeckNames();
-    console.log(info);
+    const fields = {
+        Sentence: inputSentence.value,
+        Word: selectedWordDisplay.value,
+        Definition: outputExplanation.value,
+    };
+    window.services.anki.addNoteToAnki(fields);
+    statusBar.textContent = `Added Note: ${inputSentence.value}`;
 });
-
-// testing
-// window.services.anki.getDeckNames().then((deckNames) => {
-//     console.log(deckNames);
-// });

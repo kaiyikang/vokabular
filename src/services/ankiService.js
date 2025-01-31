@@ -1,8 +1,9 @@
 // API: https://foosoft.net/projects/anki-connect/index.html
 const { ankiApi } = require("../api/ankiApi");
-const ANKI_DEFAULT_DECK = "TEST_DEFAULT";
+const ANKI_DEFAULT_DECK = "Deutsch";
 const ANKI_DEFAULT_MODEL = {
-    modelName: "vokabular-model",
+    // modelName: "vokabular-model",
+    modelName: "vocabsieve-notes",
     inOrderFields: [
         "Sentence",
         "Word",
@@ -58,15 +59,15 @@ module.exports = {
     addNoteToAnki,
 };
 
-(async () => {
-    const fields = {
-        Sentence: "SENTENCE",
-        Word: "WORD",
-        Definition: "DEF1",
-        "Definition#2": "DEF2",
-        Image: "IMG",
-        Pronunciation: "RPO",
-    };
+// (async () => {
+//     const fields = {
+//         Sentence: "SENTENCE",
+//         Word: "WORD",
+//         Definition: "DEF1",
+//         "Definition#2": "DEF2",
+//         Image: "IMG",
+//         Pronunciation: "RPO",
+//     };
 
-    addNoteToAnki(fields);
-})();
+//     addNoteToAnki(fields);
+// })();
