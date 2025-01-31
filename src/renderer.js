@@ -76,11 +76,15 @@ inputSentence.addEventListener("dblclick", async (event) => {
 });
 
 saveToAnkiBtn.addEventListener("click", async (event) => {
-    const fields = {
-        Sentence: inputSentence.value,
-        Word: selectedWordDisplay.value,
-        Definition: outputExplanation.value,
-    };
-    window.services.anki.addNoteToAnki(fields);
-    statusBar.textContent = `Added Note: ${inputSentence.value}`;
+    try {
+        const fields = {
+            Sentence: inputSentence.value,
+            Word: selectedWordDisplay.value,
+            Definition: outputExplanation.value,
+        };
+        window.services.anki.addNoteToAnki(fields);
+        statusBar.textContent = `Added Note: ${selectedWordDisplay.value}`;
+    } catch (error) {
+        statusBar.textContent = `Error: ${error.message}`;
+    }
 });
