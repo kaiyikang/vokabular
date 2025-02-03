@@ -75,14 +75,30 @@ inputSentence.addEventListener("dblclick", async (event) => {
     }
 });
 
+function validateFieldsBeforeSend(fields) {
+    if (!fields.Sentence?.trim()) {
+        throw new Error("Example Sentence is required");
+    }
+    if (!fields.Word?.trim()) {
+        throw new Error("Selected Word is required");
+    }
+    if (!fields.Definition?.trim()) {
+        throw new Error("Definition is required");
+    }
+    return true;
+}
+
 saveToAnkiBtn.addEventListener("click", async (event) => {
     try {
-        const fields = {
+        const ankiFields = {
             Sentence: inputSentence.value,
             Word: selectedWordDisplay.value,
             Definition: outputExplanation.value,
         };
-        window.services.anki.addNoteToAnki(fields);
+
+        validateFieldsBeforeSend(ankiFields);
+
+        window.services.anki.addNoteToAnki(ankiFields);
         statusBar.textContent = `Added Note: ${selectedWordDisplay.value}`;
     } catch (error) {
         statusBar.textContent = `Error: ${error.message}`;
