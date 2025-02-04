@@ -57,6 +57,10 @@ inputSentence.addEventListener("dblclick", async (event) => {
                 inputPhrase,
                 selectedWord
             );
+            inputSentence.value = inputPhrase.replace(
+                new RegExp(`(${selectedWord})`, "gi"),
+                "<b>$1</b>"
+            );
             selectedWordDisplay.value =
                 response
                     .match(
