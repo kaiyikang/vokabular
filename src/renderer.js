@@ -3,6 +3,7 @@ const outputExplanation = document.getElementById("outputExplanation");
 const selectedWordDisplay = document.getElementById("selectedWordDisplay");
 const statusBar = document.getElementById("statusBar");
 const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
+const clearInputBtn = document.getElementById("clearInputBtn");
 
 // Setting 监听输入框的输入事件
 document.addEventListener("DOMContentLoaded", () => {
@@ -39,6 +40,12 @@ function unlockUI() {
     selectedWordDisplay.style.backgroundColor = "#ffffff";
     statusBar.textContent = "Done";
 }
+
+clearInputBtn.addEventListener("click", () => {
+    inputSentence.value = "";
+    selectedWordDisplay.value = "";
+    outputExplanation.value = "";
+});
 
 inputSentence.addEventListener("input", (event) => {
     const sentence = event.target.value;
