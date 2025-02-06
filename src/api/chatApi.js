@@ -3,6 +3,12 @@ const { Anthropic } = require("@anthropic-ai/sdk");
 const dotenv = require("dotenv");
 dotenv.config();
 
+const openRouterClient = new OpenAI({
+    baseURL: process.env.OPENROUTER_BASE_URL,
+    apiKey: process.env.OPENROUTER_API_KEY,
+    dangerouslyAllowBrowser: true,
+});
+
 const deepseekClient = new OpenAI({
     baseURL: process.env.DEEPSEEK_BASE_URL,
     apiKey: process.env.DEEPSEEK_API_KEY,
@@ -29,7 +35,7 @@ async function callAnthropicAPI(promptContent) {
     return msg.content[0].text;
 }
 
-async function callDeepseekAPI(promptContent) {
+async function callDeepSeekAPI(promptContent) {
     const completion = await deepseekClient.chat.completions.create({
         messages: [
             {
@@ -42,7 +48,24 @@ async function callDeepseekAPI(promptContent) {
     return completion.choices[0].message.content;
 }
 
+async function callOpenRouterAPI(
+    promptContent,
+    model = "google/gemini-2.0-flash-001"
+) {
+    const completion = await openRouterClient.chat.completions.create({
+        messages: [
+            {
+                role: "user",
+                content: promptContent,
+            },
+        ],
+        model: model,
+    });
+    return completion.choices[0].message.content;
+}
+
 module.exports = {
     callAnthropicAPI,
-    callDeepseekAPI,
+    callDeepSeekAPI,
+    callOpenRouterAPI,
 };
