@@ -45,6 +45,7 @@ clearInputBtn.addEventListener("click", () => {
     inputSentence.value = "";
     selectedWordDisplay.value = "";
     outputExplanation.value = "";
+    inputSentence.focus();
 });
 
 inputSentence.addEventListener("input", (event) => {
