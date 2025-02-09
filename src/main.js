@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const fs = require("fs");
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -21,7 +22,6 @@ function createWindow() {
     });
 }
 
-// 监听渲染进程的打开新窗口请求
 ipcMain.on("show-settings", () => {
     const newWindow = new BrowserWindow({
         width: 600,
@@ -37,8 +37,22 @@ ipcMain.on("show-settings", () => {
     newWindow.loadFile("public/settings.html");
 });
 
+function getConfig() {
+    const configPath = path.join(app.getAppPath(), "src", "config.json");
+    try {
+        const configData = fs.readFileSync(configPath, "utf-8");
+        return JSON.parse(configData);
+    } catch (error) {
+        console.error("Error reading or parsing config.json", error);
+        return {};
+    }
+    return configPath;
+}
+
 app.whenReady().then(() => {
     createWindow();
+    const config = getConfig();
+    console.log("Loaded config:", config);
 
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) {

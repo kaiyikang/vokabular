@@ -1,13 +1,9 @@
 {
-    // OpenAPI
     "OPENAI_API_KEY":"",
-    // Anthropic
     "ANTHROPIC_API_KEY":"",
-    // Openrouter
     "OPENROUTER_API_KEY":"",
     "OPENROUTER_BASE_URL":"https://openrouter.ai/api/v1",
     "OPENROUTER_MODEL":"google/gemini-2.0-flash-001",
-    // Deepseek
     "DEEPSEEK_API_KEY":"",
     "DEEPSEEK_BASE_URL":"https://api.deepseek.com",
     "ankiDockerName": "Deutsch",
