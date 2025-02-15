@@ -50,7 +50,7 @@ clearInputBtn.addEventListener("click", () => {
 
 inputSentence.addEventListener("input", (event) => {
     const sentence = event.target.value;
-    const singleLineText = sentence.replace(/[\r\n]+/g, " ");
+    const singleLineText = sentence.replace(/\s+/g, " ");
     inputSentence.value = singleLineText;
 });
 
@@ -65,10 +65,9 @@ inputSentence.addEventListener("dblclick", async (event) => {
                 inputPhrase,
                 selectedWord
             );
-            inputSentence.value = inputPhrase.replace(
-                new RegExp(`(${selectedWord})`, "gi"),
-                "<b>$1</b>"
-            );
+            inputSentence.value = inputPhrase
+                .replace(/<[^>]*>/g, "")
+                .replace(new RegExp(`(${selectedWord})`, "gi"), "<b>$1</b>");
             selectedWordDisplay.value =
                 response
                     .match(
