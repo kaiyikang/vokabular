@@ -1,14 +1,10 @@
-# TODO Note
+# Project Management
 
-- [ ] 使用 Electron 创建一个简单的应用程序
-- [ ] 搭建一个 AI 对话单元
+You can find project status here: [Trello Board](https://trello.com/invite/b/67b1fcb0c20088c7784806f7/ATTI8d9ab05f2bd876a6b549d638a4e3ed7e3870DC83/vokabular)
 
 # Note
 
 npm install openai
-
-
-
 
 # Archive
 
@@ -47,49 +43,49 @@ my-electron-app/
 
 ```json
 {
-  "name": "my-electron-app",
-  "version": "1.0.0",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron ."
-  }
+    "name": "my-electron-app",
+    "version": "1.0.0",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    }
 }
 ```
 
 6. 创建主进程文件 (main.js)：
 
 ```javascript
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
+const { app, BrowserWindow } = require("electron");
+const path = require("path");
 
-function createWindow () {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
-    }
-  })
+function createWindow() {
+    const win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+    });
 
-  win.loadFile('index.html')
+    win.loadFile("index.html");
 }
 
 app.whenReady().then(() => {
-  createWindow()
+    createWindow();
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
+    app.on("activate", () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow();
+        }
+    });
+});
+
+app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") {
+        app.quit();
     }
-  })
-})
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+});
 ```
 
 7. 创建 HTML 文件 (index.html)：
@@ -97,14 +93,14 @@ app.on('window-all-closed', () => {
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Hello Electron!</title>
-</head>
-<body>
-    <h1>Hello Electron!</h1>
-    <script src="renderer.js"></script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Hello Electron!</title>
+    </head>
+    <body>
+        <h1>Hello Electron!</h1>
+        <script src="renderer.js"></script>
+    </body>
 </html>
 ```
 
@@ -112,7 +108,7 @@ app.on('window-all-closed', () => {
 
 ```javascript
 // 这里可以写渲染进程的代码
-console.log('Hello from renderer process!')
+console.log("Hello from renderer process!");
 ```
 
 9. 运行应用：
@@ -124,35 +120,39 @@ npm start
 进阶建议：
 
 1. 使用打包工具：
+
 ```bash
 npm install electron-builder --save-dev
 ```
 
 2. 添加热重载（开发时使用）：
+
 ```bash
 npm install electron-reloader --save-dev
 ```
 
 3. 使用框架：
-可以集成 Vue.js 或 React 等前端框架：
-- electron-vue
-- electron-react-boilerplate
+   可以集成 Vue.js 或 React 等前端框架：
+
+-   electron-vue
+-   electron-react-boilerplate
 
 4. 安全配置：
-建议启用 contextIsolation 并使用 preload 脚本：
+   建议启用 contextIsolation 并使用 preload 脚本：
 
 ```javascript
 // main.js
 const win = new BrowserWindow({
-  webPreferences: {
-    nodeIntegration: false,
-    contextIsolation: true,
-    preload: path.join(__dirname, 'preload.js')
-  }
-})
+    webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, "preload.js"),
+    },
+});
 ```
 
 5. 添加开发工具：
+
 ```bash
 npm install electron-devtools-installer --save-dev
 ```
@@ -181,30 +181,32 @@ my-electron-app/
 常用功能示例：
 
 1. 系统托盘：
+
 ```javascript
-const { Tray, Menu } = require('electron')
+const { Tray, Menu } = require("electron");
 
 function createTray() {
-  const tray = new Tray('icon.png')
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show App', click: () => win.show() },
-    { label: 'Quit', click: () => app.quit() }
-  ])
-  tray.setContextMenu(contextMenu)
+    const tray = new Tray("icon.png");
+    const contextMenu = Menu.buildFromTemplate([
+        { label: "Show App", click: () => win.show() },
+        { label: "Quit", click: () => app.quit() },
+    ]);
+    tray.setContextMenu(contextMenu);
 }
 ```
 
 2. 主进程和渲染进程通信：
+
 ```javascript
 // 主进程
-ipcMain.on('message', (event, arg) => {
-  console.log(arg)
-  event.reply('reply', 'message received')
-})
+ipcMain.on("message", (event, arg) => {
+    console.log(arg);
+    event.reply("reply", "message received");
+});
 
 // 渲染进程
-ipcRenderer.send('message', 'hello from renderer')
-ipcRenderer.on('reply', (event, arg) => {
-  console.log(arg)
-})
+ipcRenderer.send("message", "hello from renderer");
+ipcRenderer.on("reply", (event, arg) => {
+    console.log(arg);
+});
 ```
