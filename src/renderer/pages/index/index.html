@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello Electron!</title>
-    <link ref="stylesheet" href="../src/styles/index.css">
+    <link rel="stylesheet" href="/styles/index.css">
     <style>
         textarea {
             width: 100%;
@@ -17,7 +17,7 @@
 </head>
 <body>
     <div>
-        <h1>Vokabular</h1>
+        <h1 class="text-2xl font-bold">Vokabular</h1>
         <button id="settingBtn">Setting</button>
         <button id="clearInputBtn">Clear</button>
         <textarea id="inputSentence" placeholder="Enter your sentence here"></textarea>
@@ -27,7 +27,7 @@
         <div id="statusBar">Initializing...</div>
     </div>
 
-    <script src="../src/renderer_index.js"></script>
+    <script src="./index.js" type="module"></script>
 </body>
 </html>
 

@@ -126,7 +126,7 @@ async function addNote(deckName, modelName, fields) {
 // }
 
 // 导出 AnkiApi 对象
-const ankiApi = {
+export const ankiApi = {
     createDeck,
     getDeckNames,
     getModelNames,
@@ -136,8 +136,4 @@ const ankiApi = {
     getCardsInfo,
     getNotesInfo,
     addNote,
-};
-
-module.exports = {
-    ankiApi,
 };

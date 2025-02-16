@@ -1,5 +1,6 @@
 // API: https://foosoft.net/projects/anki-connect/index.html
-const { ankiApi } = require("../api/ankiApi");
+// const { ankiApi } = require("../api/ankiApi");
+import { ankiApi } from "../api/ankiApi";
 const ANKI_DEFAULT_DECK = "Deutsch";
 const ANKI_DEFAULT_MODEL = {
     // modelName: "vokabular-model",
@@ -23,7 +24,7 @@ const ANKI_DEFAULT_MODEL = {
     ],
 };
 
-async function addNoteToAnki(fields) {
+export async function addNoteToAnki(fields) {
     // 检查note是否符合条件
     for (const [key, value] of Object.entries(fields)) {
         if (value === null || value === undefined) {
@@ -54,10 +55,6 @@ async function addNoteToAnki(fields) {
 
     console.log("Note added");
 }
-
-module.exports = {
-    addNoteToAnki,
-};
 
 // (async () => {
 //     const fields = {

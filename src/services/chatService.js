@@ -1,10 +1,11 @@
-const {
-    callDeepSeekAPI,
-    callAnthropicAPI,
-    callOpenRouterAPI,
-} = require("../api/chatApi");
+// const {
+//     callDeepSeekAPI,
+//     callAnthropicAPI,
+//     callOpenRouterAPI,
+// } = require("../api/chatApi");
 
-async function generateWordExplanation(
+import { callOpenRouterAPI } from "../api/chatApi";
+export async function generateWordExplanation(
     phrase = "",
     word = "",
     nativeLang = "English"
@@ -26,7 +27,3 @@ async function generateWordExplanation(
     const result = await callOpenRouterAPI(promptContent);
     return result;
 }
-
-module.exports = {
-    generateWordExplanation,
-};

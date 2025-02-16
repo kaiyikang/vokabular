@@ -64,8 +64,4 @@ async function callOpenRouterAPI(
     return completion.choices[0].message.content;
 }
 
-module.exports = {
-    callAnthropicAPI,
-    callDeepSeekAPI,
-    callOpenRouterAPI,
-};
+export { callAnthropicAPI, callDeepSeekAPI, callOpenRouterAPI };
