@@ -1,8 +1,4 @@
-import {
-    callOpenRouterAPI,
-    callDeepSeekAPI,
-    callOpenRouterAPI,
-} from "../api/chatApi";
+import { callOpenRouterAPI, callDeepSeekAPI } from "../api/chatApi";
 
 export async function generateWordExplanation(
     sourceText = "",
