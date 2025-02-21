@@ -2,31 +2,115 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>Hello Electron!</title>
+        <title>Vokabular</title>
         <link rel="stylesheet" href="/styles/index.css" />
+        <link
+            href="https://unpkg.com/heroicons@2.0.18/24/outline/index.css"
+            rel="stylesheet"
+        />
     </head>
     <body>
-        <div class="flex flex-col">
-            <h1 class="text-2xl">Vokabular</h1>
-            <button
-                id="settingBtn"
-                class="ml-2 rounded-md border border-transparent bg-stone-900 px-4 py-2 text-center text-sm text-white shadow-md transition-all hover:bg-slate-700 hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            >
-                Setting
-            </button>
-            <button id="clearInputBtn">Clear</button>
-            <textarea
-                id="inputSentence"
-                placeholder="Enter your sentence here"
-            ></textarea>
-            <textarea
-                id="selectedWordDisplay"
-                placeholder="Selected word"
-                readonly
-            ></textarea>
-            <textarea id="outputExplanation" placeholder="Output"></textarea>
-            <button id="saveToAnkiBtn">Save to Anki</button>
-            <div id="statusBar">Initializing...</div>
+        <div class="flex min-h-screen flex-col p-4">
+            <!-- 主要内容区域 -->
+            <div class="flex-1 space-y-8">
+                <!-- 使用 flex-1 确保内容区域占满剩余空间 -->
+                <!-- 顶部设置按钮 -->
+                <div class="flex justify-end">
+                    <button
+                        id="settingBtn"
+                        class="rounded-lg border-2 border-stone-200 bg-white px-4 py-2 font-medium text-stone-600 shadow-sm transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                    >
+                        Setting
+                    </button>
+                </div>
+
+                <!-- 标题区域 -->
+                <div class="flex items-end space-x-2">
+                    <h1 class="text-4xl font-semibold">Vokabular</h1>
+                    <span
+                        class="cursor-help text-sm text-stone-400"
+                        title="this is details"
+                        >how to use?</span
+                    >
+                </div>
+
+                <!-- 表单区域 -->
+                <div class="space-y-4">
+                    <!-- 统一使用 space-y-4 作为表单元素间距 -->
+                    <!-- 输入区域 -->
+                    <div class="form-group">
+                        <label
+                            for="inputSentence"
+                            class="mb-2 block font-medium text-stone-700/60"
+                        >
+                            Input your sentence
+                        </label>
+                        <textarea
+                            id="inputSentence"
+                            placeholder="Enter your sentence here"
+                            class="w-full rounded-lg border-2 border-stone-200 bg-stone-50 p-2 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                        ></textarea>
+                    </div>
+
+                    <!-- 选中词显示区域 -->
+                    <div class="form-group">
+                        <label
+                            for="selectedWordDisplay"
+                            class="mb-2 block font-medium text-stone-700/60"
+                        >
+                            Selected Word
+                        </label>
+                        <input
+                            type="text"
+                            id="selectedWordDisplay"
+                            placeholder="Selected word will appear here"
+                            readonly
+                            class="w-full rounded-lg border-2 border-stone-200 bg-stone-50 p-2 read-only:cursor-not-allowed read-only:bg-stone-100"
+                        />
+                    </div>
+
+                    <!-- 输出解释区域 -->
+                    <div class="form-group">
+                        <label
+                            for="outputExplanation"
+                            class="mb-2 block font-medium text-stone-700/60"
+                        >
+                            Output
+                        </label>
+                        <textarea
+                            id="outputExplanation"
+                            placeholder="Explanation will appear here"
+                            class="h-26 w-full rounded-lg border-2 border-stone-200 bg-stone-50 p-2 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                        ></textarea>
+                    </div>
+
+                    <!-- 状态栏 -->
+                    <div
+                        id="statusBar"
+                        class="flex items-center gap-2 rounded-lg bg-stone-100 p-2 text-stone-600"
+                    >
+                        <span>Initializing...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部按钮区域 -->
+            <div class="mt-auto border-t border-stone-200 bg-stone-50 p-4">
+                <div class="flex justify-between">
+                    <button
+                        id="clearInputBtn"
+                        class="rounded-lg border-2 border-stone-200 bg-white px-4 py-2 font-medium text-stone-600 transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                    >
+                        Clear
+                    </button>
+                    <button
+                        id="saveToAnkiBtn"
+                        class="rounded-lg bg-stone-800 px-4 py-2 font-medium text-white transition-all duration-200 hover:bg-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                    >
+                        Save to Anki
+                    </button>
+                </div>
+            </div>
         </div>
 
         <script src="./index.js" type="module"></script>
