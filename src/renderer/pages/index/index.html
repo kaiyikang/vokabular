@@ -13,37 +13,35 @@
         <div class="flex min-h-screen flex-col p-4">
             <!-- 主要内容区域 -->
             <div class="flex-1 space-y-8">
-                <!-- 使用 flex-1 确保内容区域占满剩余空间 -->
-                <!-- 顶部设置按钮 -->
-                <div class="flex justify-end">
+                <!-- 标题和设置按钮区域 -->
+                <div class="flex items-center justify-between">
+                    <!-- 标题部分 -->
+                    <div class="flex items-end space-x-2">
+                        <h1 class="text-4xl font-semibold">Vokabular</h1>
+                        <span
+                            class="cursor-help text-sm text-stone-400 hover:underline"
+                            title="this is details"
+                            >how to use?</span
+                        >
+                    </div>
+                    <!-- 设置按钮 -->
                     <button
                         id="settingBtn"
-                        class="rounded-lg border-2 border-stone-200 bg-white px-4 py-2 font-medium text-stone-600 shadow-sm transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                        class="font-xl rounded-lg border-1 border-stone-200 bg-white px-4 py-2 font-medium text-stone-600 shadow-sm transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
                     >
                         Setting
                     </button>
                 </div>
 
-                <!-- 标题区域 -->
-                <div class="flex items-end space-x-2">
-                    <h1 class="text-4xl font-semibold">Vokabular</h1>
-                    <span
-                        class="cursor-help text-sm text-stone-400"
-                        title="this is details"
-                        >how to use?</span
-                    >
-                </div>
-
                 <!-- 表单区域 -->
                 <div class="space-y-4">
-                    <!-- 统一使用 space-y-4 作为表单元素间距 -->
                     <!-- 输入区域 -->
                     <div class="form-group">
                         <label
                             for="inputSentence"
                             class="mb-2 block font-medium text-stone-700/60"
                         >
-                            Input your sentence
+                            Sentence
                         </label>
                         <textarea
                             id="inputSentence"
@@ -58,7 +56,7 @@
                             for="selectedWordDisplay"
                             class="mb-2 block font-medium text-stone-700/60"
                         >
-                            Selected Word
+                            Selected
                         </label>
                         <input
                             type="text"
@@ -95,7 +93,7 @@
             </div>
 
             <!-- 底部按钮区域 -->
-            <div class="mt-auto border-t border-stone-200 bg-stone-50 p-4">
+            <div class="mt-auto border-stone-200">
                 <div class="flex justify-between">
                     <button
                         id="clearInputBtn"
