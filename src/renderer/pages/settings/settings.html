@@ -1,18 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Settings</title>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Settings</title>
+        <link rel="stylesheet" href="/styles/index.css" />
+    </head>
+    <body>
+        <!-- <div>
+            <h1>Settings</h1>
+            <textarea
+                id="nativeLanguage"
+                placeholder="native Language"
+            ></textarea>
+            <textarea
+                id="targetLanguage"
+                placeholder="target Language"
+            ></textarea>
+        </div> -->
 
-</head>
-<body>
-    <div>
-        <h1> Settings</h1>
-        <textarea id="nativeLanguage" placeholder="native Language"></textarea>
-        <textarea id="targetLanguage" placeholder="target Language"></textarea>
-    </div>
+        <div class="flex min-h-screen flex-col p-4">
+            <div class="flex-1">
+                <!-- 标题和设置按钮区域 -->
+                <div class="flex items-center justify-between">
+                    <!-- 标题部分 -->
+                    <div class="flex items-end space-x-2">
+                        <h1 class="text-4xl font-semibold">Settings</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-auto border-stone-200">
+                <div class="flex justify-end space-x-4">
+                    <button
+                        id="clearInputBtn"
+                        class="rounded-lg border-2 border-stone-200 bg-white px-4 py-2 font-medium text-stone-600 transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        id="saveToAnkiBtn"
+                        class="rounded-lg bg-stone-800 px-4 py-2 font-medium text-white transition-all duration-200 hover:bg-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                    >
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    <script src="./settings.js" type="module"></script>
-</body>
+        <script src="./settings.js" type="module"></script>
+    </body>
 </html>
-
