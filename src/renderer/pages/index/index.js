@@ -5,6 +5,10 @@ const statusBar = document.getElementById("statusBar");
 const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
 const clearInputBtn = document.getElementById("clearInputBtn");
 
+function updateStatusBarContent(content) {
+    statusBar.textContent = content;
+}
+
 // Setting 监听输入框的输入事件
 document.addEventListener("DOMContentLoaded", () => {
     const settingBtn = document.getElementById("settingBtn");
@@ -17,6 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// 页面加载的时候启动健康检查
+document.addEventListener("DOMContentLoaded", () => {
+    updateAnkiButtonState();
+    setInterval(updateAnkiButtonState, 10000);
+});
+
 // 锁定界面元素
 function lockUI() {
     inputSentence.disabled = true;
@@ -26,7 +36,7 @@ function lockUI() {
     inputSentence.style.backgroundColor = "#f0f0f0";
     outputExplanation.style.backgroundColor = "#f0f0f0";
     selectedWordDisplay.style.backgroundColor = "#f0f0f0";
-    statusBar.textContent = "AI Generating...";
+    updateStatusBarContent("AI Generating...");
 }
 
 // 解锁界面元素
@@ -38,7 +48,6 @@ function unlockUI() {
     inputSentence.style.backgroundColor = "#ffffff";
     outputExplanation.style.backgroundColor = "#ffffff";
     selectedWordDisplay.style.backgroundColor = "#ffffff";
-    statusBar.textContent = "Done";
 }
 
 clearInputBtn.addEventListener("click", () => {
@@ -46,6 +55,8 @@ clearInputBtn.addEventListener("click", () => {
     selectedWordDisplay.value = "";
     outputExplanation.value = "";
     inputSentence.focus();
+    updateAnkiButtonState();
+    updateStatusBarContent("All fields are cleared!");
 });
 
 inputSentence.addEventListener("input", (event) => {
@@ -63,7 +74,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
             lockUI();
             const response = await window.services.chat.generateWordExplanation(
                 inputPhrase,
-                selectedWord
+                selectedWord,
             );
             inputSentence.value = inputPhrase
                 .replace(/<[^>]*>/g, "")
@@ -71,7 +82,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
             selectedWordDisplay.value =
                 response
                     .match(
-                        /<extracted_combination>([\s\S]*?)<\/extracted_combination>/
+                        /<extracted_combination>([\s\S]*?)<\/extracted_combination>/,
                     )?.[1]
                     ?.trim() || selectedWord;
             outputExplanation.value =
@@ -79,14 +90,15 @@ inputSentence.addEventListener("dblclick", async (event) => {
                     .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
                     ?.trim() || response;
         } catch (error) {
-            statusBar.textContent = `Error: ${error.message}`;
+            updateStatusBarContent(`Error: ${error.message}`);
         } finally {
             unlockUI();
         }
     }
 });
 
-function validateFieldsBeforeSend(fields) {
+// Anki related functions
+function validateAnkiFieldsBeforeSend(fields) {
     if (!fields.Sentence?.trim()) {
         throw new Error("Example Sentence is required");
     }
@@ -101,17 +113,37 @@ function validateFieldsBeforeSend(fields) {
 
 saveToAnkiBtn.addEventListener("click", async (event) => {
     try {
+        const isHealthy = await window.services.anki.checkAnkiHealth();
+        if (!isHealthy) {
+            throw new Error("Anki is not running or not accessible.");
+        }
         const ankiFields = {
             Sentence: inputSentence.value,
             Word: selectedWordDisplay.value,
             Definition: outputExplanation.value,
         };
-
-        validateFieldsBeforeSend(ankiFields);
+        validateAnkiFieldsBeforeSend(ankiFields);
 
         window.services.anki.addNoteToAnki(ankiFields);
-        statusBar.textContent = `Added Note: ${selectedWordDisplay.value}`;
+        updateStatusBarContent(`Added Note: ${selectedWordDisplay.value}`);
+        await updateAnkiButtonState();
     } catch (error) {
-        statusBar.textContent = `Error: ${error.message}`;
+        updateStatusBarContent(`Error: ${error.message}`);
+        await updateAnkiButtonState();
     }
 });
+
+async function updateAnkiButtonState() {
+    try {
+        const isHealthy = await window.services.anki.checkAnkiHealth();
+        saveToAnkiBtn.disabled = !isHealthy;
+        saveToAnkiBtn.style.opacity = isHealthy ? "1" : "0.5";
+        saveToAnkiBtn.title = isHealthy ? "" : "Please open Anki";
+        saveToAnkiBtn.style.cursor = isHealthy ? "pointer" : "not-allowed";
+    } catch (error) {
+        saveToAnkiBtn.disabled = true;
+        saveToAnkiBtn.style.opacity = "0.5";
+        saveToAnkiBtn.style.cursor = "not-allowed";
+        updateStatusBarContent(`Error: ${error.message}`);
+    }
+}

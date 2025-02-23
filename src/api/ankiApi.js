@@ -32,9 +32,12 @@ async function sendAnkiRequest(action, params = {}) {
 async function ankiHealthCheck() {
     try {
         const result = await sendAnkiRequest("version");
+        if (!result) {
+            return false;
+        }
         return true;
     } catch (error) {
-        console.error("Anki Connect health check failed:", error);
+        console.error("ankiHealthCheck() checks fails");
         return false;
     }
 }
@@ -45,7 +48,7 @@ async function invokeAnki(action, params = {}) {
         await ankiHealthCheck();
         return await sendAnkiRequest(action, params);
     } catch (error) {
-        console.error("Anki Connect request error:", error);
+        console.error("invokeAnki() error:", error);
         throw error;
     }
 }
@@ -127,6 +130,7 @@ async function addNote(deckName, modelName, fields) {
 
 // 导出 AnkiApi 对象
 export const ankiApi = {
+    ankiHealthCheck,
     createDeck,
     getDeckNames,
     getModelNames,

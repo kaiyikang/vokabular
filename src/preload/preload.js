@@ -1,9 +1,6 @@
-// const { contextBridge, ipcRenderer } = require("electron");
-// const { generateWordExplanation } = require("../services/chatService");
-// const { addNoteToAnki } = require("../services/ankiService");
 import { contextBridge, ipcRenderer } from "electron";
 import { generateWordExplanation } from "../services/chatService";
-import { addNoteToAnki } from "../services/ankiService";
+import { addNoteToAnki, checkAnkiHealth } from "../services/ankiService";
 const services = {
     chat: {
         generateWordExplanation: async (queriedSentence, queriedWord) => {
@@ -13,6 +10,9 @@ const services = {
     anki: {
         addNoteToAnki: async (fields) => {
             return await addNoteToAnki(fields);
+        },
+        checkAnkiHealth: async () => {
+            return await checkAnkiHealth();
         },
     },
 };

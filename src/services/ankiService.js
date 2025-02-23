@@ -1,5 +1,4 @@
 // API: https://foosoft.net/projects/anki-connect/index.html
-// const { ankiApi } = require("../api/ankiApi");
 import { ankiApi } from "../api/ankiApi";
 const ANKI_DEFAULT_DECK = "Deutsch";
 const ANKI_DEFAULT_MODEL = {
@@ -23,6 +22,10 @@ const ANKI_DEFAULT_MODEL = {
         },
     ],
 };
+
+export async function checkAnkiHealth() {
+    return await ankiApi.ankiHealthCheck();
+}
 
 export async function addNoteToAnki(fields) {
     // 检查note是否符合条件
@@ -50,7 +53,7 @@ export async function addNoteToAnki(fields) {
     await ankiApi.addNote(
         ANKI_DEFAULT_DECK,
         ANKI_DEFAULT_MODEL.modelName,
-        fields
+        fields,
     );
 
     console.log("Note added");
