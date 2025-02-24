@@ -1,6 +1,7 @@
 const { OpenAI } = require("openai");
 const { Anthropic } = require("@anthropic-ai/sdk");
 const dotenv = require("dotenv");
+
 dotenv.config();
 
 const openRouterClient = new OpenAI({
@@ -50,7 +51,7 @@ async function callDeepSeekAPI(promptContent) {
 
 async function callOpenRouterAPI(
     promptContent,
-    model = "google/gemini-2.0-flash-001"
+    model = "google/gemini-2.0-flash-001",
 ) {
     const completion = await openRouterClient.chat.completions.create({
         messages: [

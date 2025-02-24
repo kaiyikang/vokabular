@@ -1,6 +1,7 @@
 // API: https://foosoft.net/projects/anki-connect/index.html
-import { ankiApi } from "@api/ankiApi.js";
-const ANKI_DEFAULT_DECK = "Deutsch";
+import { ankiApi } from "../api/ankiApi.js";
+
+const ANKI_DEFAULT_DECK = "";
 const ANKI_DEFAULT_MODEL = {
     // modelName: "vokabular-model",
     modelName: "vocabsieve-notes",

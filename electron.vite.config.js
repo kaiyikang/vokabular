@@ -1,17 +1,5 @@
 import { resolve } from "path";
 
-const sharedAliases = {
-    "@": resolve(__dirname, "./src"),
-    "@api": resolve(__dirname, "./src/api"),
-    "@config": resolve(__dirname, "./src/config"),
-    "@main": resolve(__dirname, "./src/main"),
-    "@preload": resolve(__dirname, "./src/preload"),
-    "@renderer": resolve(__dirname, "./src/renderer"),
-    "@services": resolve(__dirname, "./src/services"),
-    "@pages": resolve(__dirname, "./src/renderer/pages"),
-    "@styles": resolve(__dirname, "./src/renderer/styles"),
-};
-
 export default {
     main: {
         build: {
@@ -21,7 +9,6 @@ export default {
                 external: ["electron"],
             },
         },
-        resolve: { alias: sharedAliases },
     },
     preload: {
         build: {
@@ -31,7 +18,6 @@ export default {
                 external: ["electron"],
             },
         },
-        resolve: { alias: sharedAliases },
     },
     renderer: {
         root: "src/renderer",
@@ -54,7 +40,7 @@ export default {
             postcss: "./postcss.config.js",
         },
         resolve: {
-            alias: sharedAliases,
+            alias: { "@": resolve(__dirname, "./src") },
         },
     },
 };

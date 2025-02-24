@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-
+import config from "../config/configSchema";
 // Common
 const defaultWindowConfig = {
     webPreferences: {

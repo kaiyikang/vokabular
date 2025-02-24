@@ -1,4 +1,4 @@
-import { callOpenRouterAPI, callDeepSeekAPI } from "@api/chatApi.js";
+import { callOpenRouterAPI, callDeepSeekAPI } from "../api/chatApi.js";
 
 export async function generateWordExplanation(
     sourceText = "",
