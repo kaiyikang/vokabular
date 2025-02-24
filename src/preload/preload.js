@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { generateWordExplanation } from "../services/chatService";
 import { addNoteToAnki, checkAnkiHealth } from "../services/ankiService";
+
 const services = {
     chat: {
         generateWordExplanation: async (queriedSentence, queriedWord) => {

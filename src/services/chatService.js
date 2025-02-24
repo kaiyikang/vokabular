@@ -1,10 +1,10 @@
-import { callOpenRouterAPI, callDeepSeekAPI } from "../api/chatApi";
+import { callOpenRouterAPI, callDeepSeekAPI } from "@api/chatApi.js";
 
 export async function generateWordExplanation(
     sourceText = "",
     focusWord = "",
     nativeLanguage = "English",
-    targetLanguage = "German"
+    targetLanguage = "German",
 ) {
     const promptContent = [
         {
