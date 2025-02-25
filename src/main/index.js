@@ -1,62 +1,62 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import config from "../config/configSchema";
-// Common
-const defaultWindowConfig = {
-    webPreferences: {
-        webSecurity: false,
-        sandbox: false,
-        preload: path.join(__dirname, "../preload/preload.js"),
-        nodeIntegration: false,
-        contextIsolation: true,
-    },
-};
+import { createChatService } from "../services/chatService";
+import { createAnkiService } from "../services/ankiService";
+import { createWindow } from "./windowManager";
 
-function createWindowWithPage(options = {}, pagePath) {
-    const win = new BrowserWindow({
-        ...defaultWindowConfig,
-        ...options,
+// service
+const chatService = createChatService(config);
+const ankiService = createAnkiService(config);
+
+function createIpcHandler(name, handler) {
+    ipcMain.handle(name, async (event, ...args) => {
+        try {
+            return await handler(...args);
+        } catch (error) {
+            console.error(`Error in ${name}:`, error);
+            throw error;
+        }
     });
-
-    const pageUrl =
-        process.env.NODE_ENV === "development"
-            ? `http://localhost:5173/pages/${pagePath}`
-            : path.join(__dirname, `../renderer/pages/${pagePath}`);
-
-    process.env.NODE_ENV === "development"
-        ? win.loadURL(pageUrl)
-        : win.loadFile(pageUrl);
-
-    win.webContents.on("console-message", (event, level, message) => {
-        console.log(`[Renderer] ${level}: ${message}`);
-    });
-
-    return win;
 }
 
-function createMainWindow() {
-    return createWindowWithPage(
-        { width: 400, height: 600 },
+createIpcHandler(
+    "chat:generateWordExplanation",
+    ({ queriedSentence, queriedWord }) =>
+        chatService.generateWordExplanation(queriedSentence, queriedWord),
+);
+
+createIpcHandler("anki:addNoteToAnki", (fields) =>
+    ankiService.addNoteToAnki(fields),
+);
+
+createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
+
+function mainWindow() {
+    return createWindow(
+        "main",
+        { width: 400, height: 660 },
         "index/index.html",
     );
 }
 
-function createSettingsWindow() {
-    return createWindowWithPage(
+function settingWindow() {
+    return createWindow(
+        "setting",
         { width: 600, height: 400 },
         "settings/settings.html",
     );
 }
 
 // connect
-ipcMain.on("show-settings", createSettingsWindow);
+ipcMain.on("show-settings", settingWindow);
 
 app.whenReady().then(() => {
-    createMainWindow();
+    mainWindow();
 
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createMainWindow();
+            mainWindow();
         }
     });
 });

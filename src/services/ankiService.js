@@ -1,7 +1,7 @@
 // API: https://foosoft.net/projects/anki-connect/index.html
-import { ankiApi } from "../api/ankiApi.js";
 
-const ANKI_DEFAULT_DECK = "";
+import { createAnkiApi } from "../api/ankiApi.js";
+
 const ANKI_DEFAULT_MODEL = {
     // modelName: "vokabular-model",
     modelName: "vocabsieve-notes",
@@ -24,40 +24,52 @@ const ANKI_DEFAULT_MODEL = {
     ],
 };
 
-export async function checkAnkiHealth() {
-    return await ankiApi.ankiHealthCheck();
-}
+export function createAnkiService(config) {
+    const api = createAnkiApi(config);
+    const ANKI_DEFAULT_DECK = config.get("ankiDockerName");
 
-export async function addNoteToAnki(fields) {
-    // 检查note是否符合条件
-    for (const [key, value] of Object.entries(fields)) {
-        if (value === null || value === undefined) {
-            throw new Error(`Field "${key}" has a null or undefined value.`);
+    async function checkHealth() {
+        return await api.ankiHealthCheck();
+    }
+
+    async function addNoteToAnki(fields) {
+        // 检查note是否符合条件
+        for (const [key, value] of Object.entries(fields)) {
+            if (value === null || value === undefined) {
+                throw new Error(
+                    `Field "${key}" has a null or undefined value.`,
+                );
+            }
         }
+
+        // 确保deck存在
+        const deckNames = await api.getDeckNames();
+        if (!deckNames.includes(ANKI_DEFAULT_DECK)) {
+            await ankiApi.createDeck(ANKI_DEFAULT_DECK);
+            console.log("Deck created");
+        }
+
+        // 确保model存在
+        const models = await api.getModelNames();
+        if (!models.includes(ANKI_DEFAULT_MODEL.modelName)) {
+            await ankiApi.createModel(ANKI_DEFAULT_MODEL);
+            console.log("Model created");
+        }
+
+        // 5. 保存note
+        await api.addNote(
+            ANKI_DEFAULT_DECK,
+            ANKI_DEFAULT_MODEL.modelName,
+            fields,
+        );
+
+        console.log("Note added");
     }
 
-    // 确保deck存在
-    const deckNames = await ankiApi.getDeckNames();
-    if (!deckNames.includes(ANKI_DEFAULT_DECK)) {
-        await ankiApi.createDeck(ANKI_DEFAULT_DECK);
-        console.log("Deck created");
-    }
-
-    // 确保model存在
-    const models = await ankiApi.getModelNames();
-    if (!models.includes(ANKI_DEFAULT_MODEL.modelName)) {
-        await ankiApi.createModel(ANKI_DEFAULT_MODEL);
-        console.log("Model created");
-    }
-
-    // 5. 保存note
-    await ankiApi.addNote(
-        ANKI_DEFAULT_DECK,
-        ANKI_DEFAULT_MODEL.modelName,
-        fields,
-    );
-
-    console.log("Note added");
+    return {
+        checkHealth,
+        addNoteToAnki,
+    };
 }
 
 // (async () => {

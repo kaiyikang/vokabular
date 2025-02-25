@@ -144,6 +144,6 @@ async function updateAnkiButtonState() {
         saveToAnkiBtn.disabled = true;
         saveToAnkiBtn.style.opacity = "0.5";
         saveToAnkiBtn.style.cursor = "not-allowed";
-        updateStatusBarContent(`Error: ${error.message}`);
+        // updateStatusBarContent(`Error: ${error.message}`);
     }
 }
