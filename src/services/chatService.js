@@ -1,6 +1,7 @@
-import { callOpenRouterAPI, callDeepSeekAPI } from "../api/chatApi.js";
+import { createChatApi } from "../api/chatApi.js";
 
 export function createChatService(config) {
+    const api = createChatApi(config);
     const nativeLanguage = config.get("nativeLanguage");
     const targetLanguage = config.get("targetLanguage");
     return {
@@ -18,7 +19,7 @@ export function createChatService(config) {
                         .replace("{{NATIVE_LANGUAGE}}", nativeLanguage),
                 },
             ];
-            const result = await callOpenRouterAPI(promptContent);
+            const result = await api.callOpenRouterAPI(promptContent);
             return result;
         },
     };
