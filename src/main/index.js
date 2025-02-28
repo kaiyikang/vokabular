@@ -1,9 +1,10 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import path from "path";
 import config from "../config/configSchema";
 import { createChatService } from "../services/chatService";
 import { createAnkiService } from "../services/ankiService";
 import { createWindow } from "./windowManager";
+
+config.clear();
 
 // service
 const chatService = createChatService(config);

@@ -1,35 +1,43 @@
 import Store from "electron-store";
 
 const configSchema = {
-    OPENAI_API_KEY: {
+    openaiApiKey: {
         type: "string",
         default: "",
     },
-    ANTHROPIC_API_KEY: {
+    anthropicApiKey: {
         type: "string",
         default: "",
     },
-    OPENROUTER_API_KEY: {
+    openrouterApiKey: {
         type: "string",
         default: "",
     },
-    OPENROUTER_BASE_URL: {
+    openrouterBaseUrl: {
         type: "string",
         format: "uri",
         default: "https://openrouter.ai/api/v1",
     },
-    OPENROUTER_MODEL: {
+    openrouterModel: {
         type: "string",
         default: "google/gemini-2.0-flash-001",
     },
-    DEEPSEEK_API_KEY: {
+    deepseekApiKey: {
         type: "string",
         default: "",
     },
-    DEEPSEEK_BASE_URL: {
+    deepseekBaseUrl: {
         type: "string",
         format: "uri",
         default: "https://api.deepseek.com",
+    },
+    anthropicModel: {
+        type: "string",
+        default: "claude-3-5-haiku-20241022",
+    },
+    deepseekModel: {
+        type: "string",
+        default: "deepseek-chat",
     },
     ankiDockerName: {
         type: "string",
