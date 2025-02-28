@@ -5,27 +5,32 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 export function createChatApi(config = {}) {
-    console.log(config.store);
     const apiConfig = {
+        // Default provider
+        defaultProvider:
+            process.env.defaultProvider ??
+            config.get("defaultProvider") ??
+            "openai",
+        // List of providers
+        openai: {
+            apiKey: process.env.openaiApiKey ?? config.get("openaiApiKey"),
+        },
         openrouter: {
             baseURL:
-                process.env.OPENROUTER_BASE_URL ??
+                process.env.openrouterBaseUrl ??
                 config.get("openrouterBaseUrl"),
             apiKey:
-                process.env.OPENROUTER_API_KEY ??
-                config.get("openrouterApiKey"),
-            model:
-                process.env.OPENROUTER_MODEL ?? config.get("openrouterModel"),
+                process.env.openrouterApiKey ?? config.get("openrouterApiKey"),
+            model: process.env.openrouterModel ?? config.get("openrouterModel"),
         },
         deepseek: {
             baseURL:
-                process.env.DEEPSEEK_BASE_URL ?? config.get("deepseekBaseUrl"),
-            apiKey:
-                process.env.DEEPSEEK_API_KEY ?? config.get("deepseekApiKey"),
+                process.env.deepseekBaseUrl ?? config.get("deepseekBaseUrl"),
+            apiKey: process.env.deepseekApiKey ?? config.get("deepseekApiKey"),
         },
-        antropic: {
+        anthropic: {
             apiKey:
-                process.env.ANTHROPIC_API_KEY ?? config.get("anthropicApiKey"),
+                process.env.anthropicApiKey ?? config.get("anthropicApiKey"),
         },
         models: {
             anthropic:
@@ -33,30 +38,33 @@ export function createChatApi(config = {}) {
             deepseek: config.get("deepseekModel") || "deepseek-chat",
             openrouter:
                 config.get("openrouterModel") || "google/gemini-2.0-flash-001",
+            openai: config.get("openaiModel") || "gpt-4o-mini",
         },
     };
-    console.log(apiConfig);
 
     const clients = {
+        openai:
+            apiConfig.openai.apiKey ??
+            new OpenAI({
+                apiKey: apiConfig.openai.apiKey,
+            }),
         openRouter:
-            apiConfig.openrouter.baseURL &&
-            apiConfig.openrouter.apiKey &&
-            apiConfig.openrouter.model
+            apiConfig.openrouter.baseURL && apiConfig.openrouter.apiKey
                 ? new OpenAI({
-                      baseURL: process.env.OPENROUTER_BASE_URL,
-                      apiKey: process.env.OPENROUTER_API_KEY,
+                      baseURL: apiConfig.openrouter.baseURL,
+                      apiKey: apiConfig.openrouter.apiKey,
                       dangerouslyAllowBrowser: true,
                   })
                 : null,
         deepseek:
             apiConfig.deepseek.baseURL && apiConfig.deepseek.apiKey
                 ? new OpenAI({
-                      baseURL: process.env.DEEPSEEK_BASE_URL,
-                      apiKey: process.env.DEEPSEEK_API_KEY,
+                      baseURL: apiConfig.deepseek.baseURL,
+                      apiKey: apiConfig.deepseek.apiKey,
                       dangerouslyAllowBrowser: true,
                   })
                 : null,
-        anthropic: apiConfig.antropic.apiKey
+        anthropic: apiConfig.anthropic.apiKey
             ? new Anthropic({
                   apiKey: apiConfig.anthropic.apiKey,
                   dangerouslyAllowBrowser: true,
@@ -64,7 +72,56 @@ export function createChatApi(config = {}) {
             : null,
     };
 
-    console.log(clients);
+    function validateClient(client, name) {
+        if (!client) {
+            throw new Error(`${name} API client is not configured!`);
+        }
+
+        if (!client.chat || !client.chat.completions) {
+            throw new Error(
+                `${name} API client is not properly initialized. Check your API key.`,
+            );
+        }
+
+        return true;
+    }
+
+    if (!clients[apiConfig.defaultProvider]) {
+        // 尝试找到第一个可用的提供商
+        const availableProvider = Object.keys(clients).find(
+            (key) => clients[key],
+        );
+        if (availableProvider) {
+            console.warn(
+                `Default provider '${apiConfig.defaultProvider}' not configured. Using '${availableProvider}' instead.`,
+            );
+            apiConfig.defaultProvider = availableProvider;
+        } else {
+            throw new Error("No API providers are properly configured!");
+        }
+    }
+
+    async function callOpenaiAPI(promptContent) {
+        if (!clients.openai) {
+            throw new Error("Openai API client is not configured!");
+        }
+        try {
+            const completion = await clients.openai.chat.completions.create({
+                messages: [
+                    {
+                        role: "user",
+                        content: promptContent,
+                    },
+                ],
+                model: apiConfig.models.openai,
+            });
+            return completion.choices[0].message.content;
+        } catch (error) {
+            console.error("DeepSeek API call failed: ", error);
+            throw error;
+        }
+    }
+
     async function callAnthropicAPI(promptContent) {
         if (!clients.anthropic) {
             throw new Error("Anthropic API client is not configured");
@@ -128,9 +185,29 @@ export function createChatApi(config = {}) {
         }
     }
 
+    // Unified Chat API
+    async function chat(promptContent, options = {}) {
+        const provider = options.provider || apiConfig.defaultProvider;
+        console.log(provider);
+        switch (provider) {
+            case "openai":
+                return callOpenaiAPI(promptContent, options);
+            case "anthropic":
+                return callAnthropicAPI(promptContent, options);
+            case "deepseek":
+                return callDeepSeekAPI(promptContent, options);
+            case "openrouter":
+                return callOpenRouterAPI(promptContent, options);
+            default:
+                throw new Error(`Unknown provider: ${provider}`);
+        }
+    }
+
     return {
+        chat,
         callAnthropicAPI,
         callDeepSeekAPI,
         callOpenRouterAPI,
+        callOpenaiAPI,
     };
 }

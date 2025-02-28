@@ -5,7 +5,8 @@ const windows = new Map();
 
 const defaultWindowConfig = {
     webPreferences: {
-        webSecurity: false,
+        webSecurity: true,
+        allowRunningInsecureContent: false,
         sandbox: false,
         preload: path.join(__dirname, "../preload/preload.js"),
         nodeIntegration: false,

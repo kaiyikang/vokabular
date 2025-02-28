@@ -19,7 +19,7 @@ export function createChatService(config) {
                         .replace("{{NATIVE_LANGUAGE}}", nativeLanguage),
                 },
             ];
-            const result = await api.callOpenRouterAPI(promptContent);
+            const result = await api.chat(promptContent);
             return result;
         },
     };

@@ -1,14 +1,39 @@
 import Store from "electron-store";
 
 const configSchema = {
+    // ===== language learning =====
+    nativeLanguage: {
+        type: "string",
+        default: "English",
+    },
+    targetLanguage: {
+        type: "string",
+        default: "German",
+    },
+    // ===== ai =====
+    defaultProvider: {
+        type: "string",
+        default: "anthropic",
+    },
+    // Openai
     openaiApiKey: {
         type: "string",
         default: "",
     },
+    openaiModel: {
+        type: "string",
+        default: "gpt-4o-mini",
+    },
+    // Anthropic
     anthropicApiKey: {
         type: "string",
         default: "",
     },
+    anthropicModel: {
+        type: "string",
+        default: "claude-3-5-haiku-latest",
+    },
+    // openRouter
     openrouterApiKey: {
         type: "string",
         default: "",
@@ -22,6 +47,7 @@ const configSchema = {
         type: "string",
         default: "google/gemini-2.0-flash-001",
     },
+    // deepseek
     deepseekApiKey: {
         type: "string",
         default: "",
@@ -31,14 +57,11 @@ const configSchema = {
         format: "uri",
         default: "https://api.deepseek.com",
     },
-    anthropicModel: {
-        type: "string",
-        default: "claude-3-5-haiku-20241022",
-    },
     deepseekModel: {
         type: "string",
         default: "deepseek-chat",
     },
+    // ===== anki ======
     ankiDockerName: {
         type: "string",
         default: "Deutsch",
@@ -46,14 +69,6 @@ const configSchema = {
     ankiModelName: {
         type: "string",
         default: "vocabsieve-notes",
-    },
-    nativeLanguage: {
-        type: "string",
-        default: "English",
-    },
-    targetLanguage: {
-        type: "string",
-        default: "German",
     },
 };
 
