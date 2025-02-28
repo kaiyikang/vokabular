@@ -41,14 +41,13 @@ export function createChatApi(config = {}) {
             openai: config.get("openaiModel") || "gpt-4o-mini",
         },
     };
-
     const clients = {
-        openai:
-            apiConfig.openai.apiKey ??
-            new OpenAI({
-                apiKey: apiConfig.openai.apiKey,
-            }),
-        openRouter:
+        openai: apiConfig.openai.apiKey
+            ? new OpenAI({
+                  apiKey: apiConfig.openai.apiKey,
+              })
+            : null,
+        openrouter:
             apiConfig.openrouter.baseURL && apiConfig.openrouter.apiKey
                 ? new OpenAI({
                       baseURL: apiConfig.openrouter.baseURL,
@@ -117,7 +116,7 @@ export function createChatApi(config = {}) {
             });
             return completion.choices[0].message.content;
         } catch (error) {
-            console.error("DeepSeek API call failed: ", error);
+            console.error("Openai API call failed: ", error);
             throw error;
         }
     }
@@ -167,8 +166,11 @@ export function createChatApi(config = {}) {
     }
 
     async function callOpenRouterAPI(promptContent, model = null) {
+        if (!clients.openrouter) {
+            throw new Error("Openrouter API client is not configured!");
+        }
         try {
-            const completion = await clients.openRouter.chat.completions.create(
+            const completion = await clients.openrouter.chat.completions.create(
                 {
                     messages: [
                         {
@@ -181,7 +183,8 @@ export function createChatApi(config = {}) {
             );
             return completion.choices[0].message.content;
         } catch (error) {
-            console.error("Openrouter");
+            console.error("Openrouter API call failed: ", error);
+            throw error;
         }
     }
 

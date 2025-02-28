@@ -42,11 +42,22 @@ export function createWindow(name, options = {}, pagePath) {
     });
 
     win.on("closed", () => {
+        if (name === "main") {
+            closeAllWindowsExcept("main");
+        }
         windows.delete(name);
     });
 
     windows.set(name, win);
     return win;
+}
+
+function closeAllWindowsExcept(exceptName) {
+    for (const [name, window] of windows.entries()) {
+        if (name !== exceptName && !window.isDestroyed()) {
+            window.close();
+        }
+    }
 }
 
 export function getWindow(name) {

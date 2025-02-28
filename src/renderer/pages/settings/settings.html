@@ -20,24 +20,106 @@
 
         <div class="flex min-h-screen flex-col p-4">
             <div class="flex-1">
-                <!-- 标题和设置按钮区域 -->
-                <div class="flex items-center justify-between">
-                    <!-- 标题部分 -->
-                    <div class="flex items-end space-x-2">
-                        <h1 class="text-4xl font-semibold">Settings</h1>
+                <!-- 标题部分 -->
+                <div class="flex items-end space-x-2">
+                    <h1 class="text-4xl font-semibold">Settings</h1>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Provider Selection -->
+                    <div>
+                        <label
+                            for="providerSelect"
+                            class="mb-1 block text-sm font-medium text-stone-700"
+                            >Select AI Provider</label
+                        >
+                        <div class="relative">
+                            <select
+                                id="providerSelect"
+                                class="h-10 w-full appearance-none rounded-lg border-2 border-stone-200 bg-stone-50 px-3 py-2 pr-8 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                            >
+                                <option value="openai">OpenAI</option>
+                                <option value="openrouter">OpenRouter</option>
+                                <option value="deepseek">DeepSeek</option>
+                                <option value="anthropic">Anthropic</option>
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-stone-700"
+                            >
+                                <svg
+                                    class="h-4 w-4 fill-current"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Key Input -->
+                    <div>
+                        <label
+                            for="apiKeyInput"
+                            class="mb-1 block text-sm font-medium text-stone-700"
+                            >API Key</label
+                        >
+                        <input
+                            type="password"
+                            id="apiKeyInput"
+                            placeholder="Enter your API key"
+                            class="h-10 w-full rounded-lg border-2 border-stone-200 bg-stone-50 px-3 py-2 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                        />
+                        <p class="mt-1 text-xs text-stone-500">
+                            Your API key is stored locally and never sent to our
+                            servers.
+                        </p>
+                    </div>
+
+                    <!-- Model Selection -->
+                    <div>
+                        <label
+                            for="modelSelect"
+                            class="mb-1 block text-sm font-medium text-stone-700"
+                            >Select Model</label
+                        >
+                        <div class="relative">
+                            <select
+                                id="modelSelect"
+                                class="h-10 w-full appearance-none rounded-lg border-2 border-stone-200 bg-stone-50 px-3 py-2 pr-8 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                            >
+                                <!-- Models will be populated dynamically -->
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-stone-700"
+                            >
+                                <svg
+                                    class="h-4 w-4 fill-current"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="mt-auto border-stone-200">
                 <div class="flex justify-end space-x-4">
                     <button
-                        id="clearInputBtn"
+                        id="cancelSettingsBtn"
                         class="rounded-lg border-2 border-stone-200 bg-white px-4 py-2 font-medium text-stone-600 transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
                     >
                         Cancel
                     </button>
                     <button
-                        id="saveToAnkiBtn"
+                        id="saveSettingsBtn"
                         class="rounded-lg bg-stone-800 px-4 py-2 font-medium text-white transition-all duration-200 hover:bg-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
                     >
                         Save

@@ -21,18 +21,6 @@ function createIpcHandler(name, handler) {
     });
 }
 
-createIpcHandler(
-    "chat:generateWordExplanation",
-    ({ queriedSentence, queriedWord }) =>
-        chatService.generateWordExplanation(queriedSentence, queriedWord),
-);
-
-createIpcHandler("anki:addNoteToAnki", (fields) =>
-    ankiService.addNoteToAnki(fields),
-);
-
-createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
-
 function mainWindow() {
     return createWindow(
         "main",
@@ -50,11 +38,9 @@ function settingWindow() {
 }
 
 // connect
-ipcMain.on("show-settings", settingWindow);
-
 app.whenReady().then(() => {
     mainWindow();
-
+    registerIpcHandlers();
     app.on("activate", () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             mainWindow();
@@ -67,3 +53,19 @@ app.on("window-all-closed", () => {
         app.quit();
     }
 });
+
+function registerIpcHandlers() {
+    createIpcHandler(
+        "chat:generateWordExplanation",
+        ({ queriedSentence, queriedWord }) =>
+            chatService.generateWordExplanation(queriedSentence, queriedWord),
+    );
+
+    createIpcHandler("anki:addNoteToAnki", (fields) =>
+        ankiService.addNoteToAnki(fields),
+    );
+
+    createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
+
+    ipcMain.on("show-settings", settingWindow);
+}
