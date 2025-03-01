@@ -4,22 +4,16 @@ import { createChatService } from "../services/chatService";
 import { createAnkiService } from "../services/ankiService";
 import { createWindow } from "./windowManager";
 
-config.clear();
-
-// service
-const chatService = createChatService(config);
-const ankiService = createAnkiService(config);
-
-function createIpcHandler(name, handler) {
-    ipcMain.handle(name, async (event, ...args) => {
-        try {
-            return await handler(...args);
-        } catch (error) {
-            console.error(`Error in ${name}:`, error);
-            throw error;
+app.whenReady().then(() => {
+    mainWindow();
+    registerIpcHandlers();
+    // for Unix
+    app.on("activate", () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            mainWindow();
         }
     });
-}
+});
 
 function mainWindow() {
     return createWindow(
@@ -28,25 +22,6 @@ function mainWindow() {
         "index/index.html",
     );
 }
-
-function settingWindow() {
-    return createWindow(
-        "setting",
-        { width: 600, height: 400 },
-        "settings/settings.html",
-    );
-}
-
-// connect
-app.whenReady().then(() => {
-    mainWindow();
-    registerIpcHandlers();
-    app.on("activate", () => {
-        if (BrowserWindow.getAllWindows().length === 0) {
-            mainWindow();
-        }
-    });
-});
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
@@ -68,4 +43,27 @@ function registerIpcHandlers() {
     createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
 
     ipcMain.on("show-settings", settingWindow);
+}
+
+function createIpcHandler(name, handler) {
+    ipcMain.handle(name, async (event, ...args) => {
+        try {
+            return await handler(...args);
+        } catch (error) {
+            console.error(`Error in ${name}:`, error);
+            throw error;
+        }
+    });
+}
+
+config.clear();
+const chatService = createChatService(config);
+const ankiService = createAnkiService(config);
+
+function settingWindow() {
+    return createWindow(
+        "setting",
+        { width: 600, height: 400 },
+        "settings/settings.html",
+    );
 }
