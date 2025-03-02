@@ -20,7 +20,7 @@ const configSchema = {
         type: "string",
         default: "",
     },
-    openaiModel: {
+    openaiDefaultModel: {
         type: "string",
         default: "gpt-4o-mini",
     },
@@ -29,7 +29,7 @@ const configSchema = {
         type: "string",
         default: "",
     },
-    anthropicModel: {
+    anthropicDefaultModel: {
         type: "string",
         default: "claude-3-5-haiku-latest",
     },
@@ -43,7 +43,7 @@ const configSchema = {
         format: "uri",
         default: "https://openrouter.ai/api/v1",
     },
-    openrouterModel: {
+    openrouterDefaultModel: {
         type: "string",
         default: "google/gemini-2.0-flash-001",
     },
@@ -57,7 +57,7 @@ const configSchema = {
         format: "uri",
         default: "https://api.deepseek.com",
     },
-    deepseekModel: {
+    deepseekDefaultModel: {
         type: "string",
         default: "deepseek-chat",
     },

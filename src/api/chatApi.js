@@ -4,6 +4,20 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+function validateClient(client, name) {
+    if (!client) {
+        throw new Error(`${name} API client is not configured!`);
+    }
+
+    if (!client.chat || !client.chat.completions) {
+        throw new Error(
+            `${name} API client is not properly initialized. Check your API key.`,
+        );
+    }
+
+    return true;
+}
+
 export function createChatApi(config = {}) {
     const apiConfig = {
         // Default provider
@@ -14,6 +28,7 @@ export function createChatApi(config = {}) {
         // List of providers
         openai: {
             apiKey: process.env.openaiApiKey ?? config.get("openaiApiKey"),
+            model: config.get("openaiDefaultModel") || "gpt-4o-mini",
         },
         openrouter: {
             baseURL:
@@ -21,26 +36,25 @@ export function createChatApi(config = {}) {
                 config.get("openrouterBaseUrl"),
             apiKey:
                 process.env.openrouterApiKey ?? config.get("openrouterApiKey"),
-            model: process.env.openrouterModel ?? config.get("openrouterModel"),
+            model:
+                config.get("openrouterDefaultModel") ||
+                "google/gemini-2.0-flash-001",
         },
         deepseek: {
             baseURL:
                 process.env.deepseekBaseUrl ?? config.get("deepseekBaseUrl"),
             apiKey: process.env.deepseekApiKey ?? config.get("deepseekApiKey"),
+            model: config.get("deepseekDefaultModel") || "deepseek-chat",
         },
         anthropic: {
             apiKey:
                 process.env.anthropicApiKey ?? config.get("anthropicApiKey"),
-        },
-        models: {
-            anthropic:
-                config.get("anthropicModel") || "claude-3-5-haiku-20241022",
-            deepseek: config.get("deepseekModel") || "deepseek-chat",
-            openrouter:
-                config.get("openrouterModel") || "google/gemini-2.0-flash-001",
-            openai: config.get("openaiModel") || "gpt-4o-mini",
+            model:
+                config.get("anthropicDefaultModel") ||
+                "claude-3-5-haiku-20241022",
         },
     };
+
     const clients = {
         openai: apiConfig.openai.apiKey
             ? new OpenAI({
@@ -71,20 +85,6 @@ export function createChatApi(config = {}) {
             : null,
     };
 
-    function validateClient(client, name) {
-        if (!client) {
-            throw new Error(`${name} API client is not configured!`);
-        }
-
-        if (!client.chat || !client.chat.completions) {
-            throw new Error(
-                `${name} API client is not properly initialized. Check your API key.`,
-            );
-        }
-
-        return true;
-    }
-
     if (!clients[apiConfig.defaultProvider]) {
         // 尝试找到第一个可用的提供商
         const availableProvider = Object.keys(clients).find(
@@ -112,7 +112,7 @@ export function createChatApi(config = {}) {
                         content: promptContent,
                     },
                 ],
-                model: apiConfig.models.openai,
+                model: apiConfig.openai.model,
             });
             return completion.choices[0].message.content;
         } catch (error) {
@@ -156,7 +156,7 @@ export function createChatApi(config = {}) {
                         content: promptContent,
                     },
                 ],
-                model: apiConfig.models.deepseek,
+                model: apiConfig.deepseek.model,
             });
             return completion.choices[0].message.content;
         } catch (error) {
@@ -165,9 +165,9 @@ export function createChatApi(config = {}) {
         }
     }
 
-    async function callOpenRouterAPI(promptContent, model = null) {
+    async function callOpenRouterAPI(promptContent) {
         if (!clients.openrouter) {
-            throw new Error("Openrouter API client is not configured!");
+            throw new Error("Openrouter client is not configured!");
         }
         try {
             const completion = await clients.openrouter.chat.completions.create(
@@ -178,7 +178,7 @@ export function createChatApi(config = {}) {
                             content: promptContent,
                         },
                     ],
-                    model: model || apiConfig.models.openrouter,
+                    model: apiConfig.openrouter.model,
                 },
             );
             return completion.choices[0].message.content;
