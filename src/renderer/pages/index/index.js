@@ -60,29 +60,10 @@ clearInputBtn.addEventListener("click", () => {
     updateStatusBarContent("All fields are cleared!");
 });
 
-inputSentence.addEventListener("input", (event) => {
+inputSentence.addEventListener("input", async (event) => {
     const sentence = event.target.value;
     const singleLineText = sentence.replace(/\s+/g, " ");
     inputSentence.value = singleLineText;
-});
-
-inputSentence.addEventListener("input", async (event) => {
-    // If toggle is not checked, use the original logic
-    console.log(clipboardToggle.checked);
-    if (!clipboardToggle.checked) {
-        const sentence = event.target.value;
-        const singleLineText = sentence.replace(/\s+/g, " ");
-        inputSentence.value = singleLineText;
-    } else {
-        // If toggle is checked, read from clipboard
-        try {
-            const clipboardText = await navigator.clipboard.readText();
-            const singleLineText = clipboardText.replace(/\s+/g, " ");
-            inputSentence.value = singleLineText;
-        } catch (err) {
-            console.error("Failed to read clipboard contents: ", err);
-        }
-    }
 });
 
 inputSentence.addEventListener("dblclick", async (event) => {

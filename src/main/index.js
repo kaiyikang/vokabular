@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, clipboard } from "electron";
 import config from "../config/configSchema";
 import { createChatService, getProviders } from "../services/chatService";
 import { createAnkiService } from "../services/ankiService";
@@ -40,8 +40,11 @@ function registerIpcHandlers() {
     createIpcHandler("anki:addNoteToAnki", (fields) =>
         ankiService.addNoteToAnki(fields),
     );
-
     createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
+
+    createIpcHandler("main:getClipboardText", () => {
+        return clipboard.readText();
+    });
 
     ipcMain.on("show-settings", settingWindow);
 }

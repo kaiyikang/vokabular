@@ -71,6 +71,7 @@ const electronAPI = {
     openSettings: () => ipcRenderer.send("show-settings"),
     saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
     getSettings: async () => await ipcRenderer.invoke("get-settings"),
+    getClipboardText: () => ipcRenderer.invoke("main:getClipboardText"),
 };
 
 contextBridge.exposeInMainWorld("services", services);
