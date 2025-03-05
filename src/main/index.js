@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import config from "../config/configSchema";
-import { createChatService } from "../services/chatService";
+import { createChatService, getProviders } from "../services/chatService";
 import { createAnkiService } from "../services/ankiService";
 import { createWindow } from "./windowManager";
 
@@ -35,6 +35,7 @@ function registerIpcHandlers() {
         ({ queriedSentence, queriedWord }) =>
             chatService.generateWordExplanation(queriedSentence, queriedWord),
     );
+    createIpcHandler("chat:getProviders", () => getProviders());
 
     createIpcHandler("anki:addNoteToAnki", (fields) =>
         ankiService.addNoteToAnki(fields),

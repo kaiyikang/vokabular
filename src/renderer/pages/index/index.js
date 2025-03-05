@@ -4,6 +4,7 @@ const selectedWordDisplay = document.getElementById("selectedWordDisplay");
 const statusBar = document.getElementById("statusBar");
 const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
 const clearInputBtn = document.getElementById("clearInputBtn");
+const clipboardToggle = document.getElementById("clipboardToggle");
 
 function updateStatusBarContent(content) {
     statusBar.textContent = content;
@@ -63,6 +64,25 @@ inputSentence.addEventListener("input", (event) => {
     const sentence = event.target.value;
     const singleLineText = sentence.replace(/\s+/g, " ");
     inputSentence.value = singleLineText;
+});
+
+inputSentence.addEventListener("input", async (event) => {
+    // If toggle is not checked, use the original logic
+    console.log(clipboardToggle.checked);
+    if (!clipboardToggle.checked) {
+        const sentence = event.target.value;
+        const singleLineText = sentence.replace(/\s+/g, " ");
+        inputSentence.value = singleLineText;
+    } else {
+        // If toggle is checked, read from clipboard
+        try {
+            const clipboardText = await navigator.clipboard.readText();
+            const singleLineText = clipboardText.replace(/\s+/g, " ");
+            inputSentence.value = singleLineText;
+        } catch (err) {
+            console.error("Failed to read clipboard contents: ", err);
+        }
+    }
 });
 
 inputSentence.addEventListener("dblclick", async (event) => {

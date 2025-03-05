@@ -1,5 +1,9 @@
 import { createChatApi } from "../api/chatApi.js";
 
+export function getProviders() {
+    return ["openai", "openrouter", "deepseek", "anthropic"];
+}
+
 export function createChatService(config) {
     const api = createChatApi(config);
     const nativeLanguage = config.get("nativeLanguage");
