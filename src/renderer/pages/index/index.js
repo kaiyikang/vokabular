@@ -51,6 +51,7 @@ clearInputBtn.addEventListener("click", () => {
     inputSentence.focus();
     updateAnkiButtonState();
     sendToStatusBar("All fields are cleared!");
+    updateClipboardInterval();
 });
 
 inputSentence.addEventListener("input", async (event) => {
@@ -128,7 +129,6 @@ saveToAnkiBtn.addEventListener("click", async (event) => {
     } catch (error) {
         sendToStatusBar(`Error: ${error.message}`);
     }
-    // restart clipboard
     updateClipboardInterval();
 });
 
