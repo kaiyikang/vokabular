@@ -51,7 +51,8 @@ clearInputBtn.addEventListener("click", () => {
     inputSentence.focus();
     updateAnkiButtonState();
     sendToStatusBar("All fields are cleared!");
-    updateClipboardInterval();
+    setupClipboardMonitoring();
+    console.log("clipboardInterval->", clipboardInterval);
 });
 
 inputSentence.addEventListener("input", async (event) => {
@@ -62,10 +63,10 @@ inputSentence.addEventListener("input", async (event) => {
 
 inputSentence.addEventListener("dblclick", async (event) => {
     // Stop the interval since the user will select word
-    if (clipboardInterval !== null) {
+    if (clipboardInterval) {
         clearInterval(clipboardInterval);
+        clipboardInterval = null;
     }
-
     const trimmedText = window.getSelection().toString().trim();
     if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
         const selectedWord = trimmedText;
@@ -84,11 +85,11 @@ inputSentence.addEventListener("dblclick", async (event) => {
                     .match(
                         /<extracted_combination>([\s\S]*?)<\/extracted_combination>/,
                     )?.[1]
-                    ?.trim() || selectedWord;
+                    ?.trim() || "Error: Cannot find <extracted_combination>";
             outputExplanation.value =
                 response
                     .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
-                    ?.trim() || response;
+                    ?.trim() || "Error: Cannot find <explanation>";
         } catch (error) {
             sendToStatusBar(`Error: ${error.message}`);
         } finally {
@@ -122,14 +123,14 @@ saveToAnkiBtn.addEventListener("click", async (event) => {
             Word: selectedWordDisplay.value,
             Definition: outputExplanation.value,
         };
-        // validateAnkiFieldsBeforeSend(ankiFields);
+        validateAnkiFieldsBeforeSend(ankiFields);
 
-        // window.services.anki.addNoteToAnki(ankiFields);
+        window.services.anki.addNoteToAnki(ankiFields);
         sendToStatusBar(`Added Note: ${selectedWordDisplay.value}`);
     } catch (error) {
         sendToStatusBar(`Error: ${error.message}`);
     }
-    updateClipboardInterval();
+    setupClipboardMonitoring();
 });
 
 async function updateAnkiButtonState() {
@@ -149,10 +150,10 @@ async function updateAnkiButtonState() {
 
 clipboardToggle.addEventListener("change", async function () {
     console.log("Toggle of clipboard: " + clipboardToggle.checked);
-    updateClipboardInterval();
+    setupClipboardMonitoring();
 });
 
-async function updateClipboardInterval() {
+async function setupClipboardMonitoring() {
     const readFromClipboard = async () => {
         const text = await window.electronAPI.getClipboardText();
         if (text && inputSentence.text !== text) {
@@ -161,7 +162,7 @@ async function updateClipboardInterval() {
     };
     if (clipboardToggle.checked) {
         clipboardInterval = setInterval(readFromClipboard, 1000);
-        readFromClipboard();
+        // readFromClipboard();
     } else {
         if (clipboardInterval) {
             clearInterval(clipboardInterval);
