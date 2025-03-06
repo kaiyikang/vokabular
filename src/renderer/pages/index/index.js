@@ -1,34 +1,26 @@
 const inputSentence = document.getElementById("inputSentence");
 const outputExplanation = document.getElementById("outputExplanation");
 const selectedWordDisplay = document.getElementById("selectedWordDisplay");
-const statusBar = document.getElementById("statusBar");
 const saveToAnkiBtn = document.getElementById("saveToAnkiBtn");
 const clearInputBtn = document.getElementById("clearInputBtn");
 const clipboardToggle = document.getElementById("clipboardToggle");
 
-function updateStatusBarContent(content) {
-    statusBar.textContent = content;
+let clipboardInterval = null;
+
+function sendToStatusBar(content) {
+    document.getElementById("statusBar").textContent = content;
 }
 
-// Setting 监听输入框的输入事件
+// When DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-    const settingBtn = document.getElementById("settingBtn");
-    if (settingBtn) {
-        settingBtn.addEventListener("click", () => {
-            window.electronAPI.openSettings();
-        });
-    } else {
-        console.error("Setting button not found");
-    }
-});
-
-// 页面加载的时候启动健康检查
-document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("settingBtn").addEventListener("click", () => {
+        window.electronAPI.openSettings();
+    });
+    // Anki Health Check
     updateAnkiButtonState();
     setInterval(updateAnkiButtonState, 10000);
 });
 
-// 锁定界面元素
 function lockUI() {
     inputSentence.disabled = true;
     outputExplanation.disabled = true;
@@ -37,10 +29,10 @@ function lockUI() {
     inputSentence.style.backgroundColor = "#f0f0f0";
     outputExplanation.style.backgroundColor = "#f0f0f0";
     selectedWordDisplay.style.backgroundColor = "#f0f0f0";
-    updateStatusBarContent("AI Generating...");
+    clearInputBtn.style.backgroundColor = "#f0f0f0";
+    sendToStatusBar("AI Generating...");
 }
 
-// 解锁界面元素
 function unlockUI() {
     inputSentence.disabled = false;
     outputExplanation.disabled = false;
@@ -49,6 +41,7 @@ function unlockUI() {
     inputSentence.style.backgroundColor = "#ffffff";
     outputExplanation.style.backgroundColor = "#ffffff";
     selectedWordDisplay.style.backgroundColor = "#ffffff";
+    clearInputBtn.style.backgroundColor = "#ffffff";
 }
 
 clearInputBtn.addEventListener("click", () => {
@@ -57,16 +50,21 @@ clearInputBtn.addEventListener("click", () => {
     outputExplanation.value = "";
     inputSentence.focus();
     updateAnkiButtonState();
-    updateStatusBarContent("All fields are cleared!");
+    sendToStatusBar("All fields are cleared!");
 });
 
 inputSentence.addEventListener("input", async (event) => {
-    const sentence = event.target.value;
-    const singleLineText = sentence.replace(/\s+/g, " ");
+    const text = event.target.value;
+    const singleLineText = text.replace(/\s+/g, " ");
     inputSentence.value = singleLineText;
 });
 
 inputSentence.addEventListener("dblclick", async (event) => {
+    // Stop the interval since the user will select word
+    if (clipboardInterval !== null) {
+        clearInterval(clipboardInterval);
+    }
+
     const trimmedText = window.getSelection().toString().trim();
     if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
         const selectedWord = trimmedText;
@@ -91,7 +89,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
                     .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
                     ?.trim() || response;
         } catch (error) {
-            updateStatusBarContent(`Error: ${error.message}`);
+            sendToStatusBar(`Error: ${error.message}`);
         } finally {
             unlockUI();
         }
@@ -114,8 +112,8 @@ function validateAnkiFieldsBeforeSend(fields) {
 
 saveToAnkiBtn.addEventListener("click", async (event) => {
     try {
-        const isHealthy = await window.services.anki.checkAnkiHealth();
-        if (!isHealthy) {
+        const isAnkiHealthy = await window.services.anki.checkAnkiHealth();
+        if (!isAnkiHealthy) {
             throw new Error("Anki is not running or not accessible.");
         }
         const ankiFields = {
@@ -123,15 +121,15 @@ saveToAnkiBtn.addEventListener("click", async (event) => {
             Word: selectedWordDisplay.value,
             Definition: outputExplanation.value,
         };
-        validateAnkiFieldsBeforeSend(ankiFields);
+        // validateAnkiFieldsBeforeSend(ankiFields);
 
-        window.services.anki.addNoteToAnki(ankiFields);
-        updateStatusBarContent(`Added Note: ${selectedWordDisplay.value}`);
-        await updateAnkiButtonState();
+        // window.services.anki.addNoteToAnki(ankiFields);
+        sendToStatusBar(`Added Note: ${selectedWordDisplay.value}`);
     } catch (error) {
-        updateStatusBarContent(`Error: ${error.message}`);
-        await updateAnkiButtonState();
+        sendToStatusBar(`Error: ${error.message}`);
     }
+    // restart clipboard
+    updateClipboardInterval();
 });
 
 async function updateAnkiButtonState() {
@@ -145,6 +143,29 @@ async function updateAnkiButtonState() {
         saveToAnkiBtn.disabled = true;
         saveToAnkiBtn.style.opacity = "0.5";
         saveToAnkiBtn.style.cursor = "not-allowed";
-        // updateStatusBarContent(`Error: ${error.message}`);
+        // sendToStatusBar(`Error: ${error.message}`);
+    }
+}
+
+clipboardToggle.addEventListener("change", async function () {
+    console.log("Toggle of clipboard: " + clipboardToggle.checked);
+    updateClipboardInterval();
+});
+
+async function updateClipboardInterval() {
+    const readFromClipboard = async () => {
+        const text = await window.electronAPI.getClipboardText();
+        if (text && inputSentence.text !== text) {
+            inputSentence.value = text.replace(/\s+/g, " ");
+        }
+    };
+    if (clipboardToggle.checked) {
+        clipboardInterval = setInterval(readFromClipboard, 1000);
+        readFromClipboard();
+    } else {
+        if (clipboardInterval) {
+            clearInterval(clipboardInterval);
+            clipboardInterval = null;
+        }
     }
 }
