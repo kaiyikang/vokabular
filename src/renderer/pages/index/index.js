@@ -1,4 +1,4 @@
-const DEBUG = true;
+const DEBUG = false;
 const inputSentence = document.getElementById("inputSentence");
 const outputExplanation = document.getElementById("outputExplanation");
 const selectedWordDisplay = document.getElementById("selectedWordDisplay");
@@ -42,35 +42,38 @@ inputSentence.addEventListener("dblclick", async (event) => {
     stopClipboardMonitoring();
 
     const trimmedText = window.getSelection().toString().trim();
-    if (trimmedText !== "" && !/^[\s\p{P}]+$/u.test(trimmedText)) {
-        const selectedWord = trimmedText;
-        const inputPhrase = event.target.value.trim();
-        try {
-            lockUI();
-            const response = DEBUG
-                ? "TEST"
-                : await window.services.chat.generateWordExplanation(
-                      inputPhrase,
-                      selectedWord,
-                  );
-            inputSentence.value = inputPhrase
-                .replace(/<[^>]*>/g, "")
-                .replace(new RegExp(`(${selectedWord})`, "gi"), "<b>$1</b>");
-            selectedWordDisplay.value =
-                response
-                    .match(
-                        /<extracted_combination>([\s\S]*?)<\/extracted_combination>/,
-                    )?.[1]
-                    ?.trim() || "Error: Cannot find <extracted_combination>";
-            outputExplanation.value =
-                response
-                    .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
-                    ?.trim() || "Error: Cannot find <explanation>";
-        } catch (error) {
-            sendToStatusBar(`Error: ${error.message}`);
-        } finally {
-            unlockUI();
-        }
+
+    if (trimmedText === "" || /^[\s\p{P}]+$/u.test(trimmedText)) {
+        return;
+    }
+
+    const selectedWord = trimmedText;
+    const inputPhrase = event.target.value.trim();
+    try {
+        lockUI();
+        const response = DEBUG
+            ? "TEST"
+            : await window.services.chat.generateWordExplanation(
+                  inputPhrase,
+                  selectedWord,
+              );
+        inputSentence.value = inputPhrase
+            .replace(/<[^>]*>/g, "")
+            .replace(new RegExp(`(${selectedWord})`, "gi"), "<b>$1</b>");
+        selectedWordDisplay.value =
+            response
+                .match(
+                    /<extracted_combination>([\s\S]*?)<\/extracted_combination>/,
+                )?.[1]
+                ?.trim() || "Error: Cannot find <extracted_combination>";
+        outputExplanation.value =
+            response
+                .match(/<explanation>([\s\S]*?)<\/explanation>/)?.[1]
+                ?.trim() || "Error: Cannot find <explanation>";
+    } catch (error) {
+        sendToStatusBar(`Error: ${error.message}`);
+    } finally {
+        unlockUI();
     }
 });
 
