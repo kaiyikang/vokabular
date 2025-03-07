@@ -10,7 +10,7 @@ const clipboardToggle = document.getElementById("clipboardToggle");
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("settingBtn").addEventListener("click", () => {
-        window.electronAPI.openSettings();
+        window.services.settings.open();
     });
 
     setInterval(updateAnkiButtonState, 10000);
@@ -169,7 +169,7 @@ async function setupClipboardMonitoring() {
 
 async function startClipboardMonitoring() {
     clipboardInterval = setInterval(async () => {
-        const text = await window.electronAPI.getClipboardText();
+        const text = await window.electronApi.getClipboardText();
         if (text && inputSentence.text !== text) {
             inputSentence.value = text.replace(/\s+/g, " ");
         }

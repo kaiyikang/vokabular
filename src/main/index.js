@@ -1,7 +1,8 @@
 import { app, BrowserWindow, ipcMain, clipboard } from "electron";
 import config from "../config/configSchema";
-import { createChatService, getProviders } from "../services/chatService";
+import { createChatService } from "../services/chatService";
 import { createAnkiService } from "../services/ankiService";
+import { createSettingService } from "../services/settingService";
 import { createWindow } from "./windowManager";
 
 app.whenReady().then(() => {
@@ -35,7 +36,7 @@ function registerIpcHandlers() {
         ({ queriedSentence, queriedWord }) =>
             chatService.generateWordExplanation(queriedSentence, queriedWord),
     );
-    createIpcHandler("chat:getProviders", () => getProviders());
+    createIpcHandler("chat:getProviders", () => chatService.getProviders());
 
     createIpcHandler("anki:addNoteToAnki", (fields) =>
         ankiService.addNoteToAnki(fields),
@@ -46,7 +47,10 @@ function registerIpcHandlers() {
         return clipboard.readText();
     });
 
-    ipcMain.on("show-settings", settingWindow);
+    ipcMain.on("settings:open", settingWindow);
+    createIpcHandler("settings:save", (settings) =>
+        settingService.save(settings),
+    );
 }
 
 function createIpcHandler(name, handler) {
@@ -63,6 +67,7 @@ function createIpcHandler(name, handler) {
 config.clear();
 const chatService = createChatService(config);
 const ankiService = createAnkiService(config);
+const settingService = createSettingService(config);
 
 function settingWindow() {
     return createWindow(

@@ -65,14 +65,15 @@ const services = {
             return await ipcRenderer.send("anki:getAnkiSettings", settings);
         },
     },
+    settings: {
+        open: () => ipcRenderer.send("settings:open"),
+        save: (settings) => ipcRenderer.invoke("settings:save", settings),
+    },
 };
 
-const electronAPI = {
-    openSettings: () => ipcRenderer.send("show-settings"),
-    saveSettings: (settings) => ipcRenderer.invoke("save-settings", settings),
-    getSettings: async () => await ipcRenderer.invoke("get-settings"),
+const electronApi = {
     getClipboardText: () => ipcRenderer.invoke("main:getClipboardText"),
 };
 
 contextBridge.exposeInMainWorld("services", services);
-contextBridge.exposeInMainWorld("electronAPI", electronAPI);
+contextBridge.exposeInMainWorld("electronApi", electronApi);
