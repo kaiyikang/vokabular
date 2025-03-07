@@ -6,5 +6,7 @@ cancelBtn.addEventListener("click", () => {
 });
 
 saveBtn.addEventListener("click", () => {
-    window.services.settings.save("ok saved!");
+    const selectedProvider = document.getElementById("providerSelect").value;
+    const apiKey = document.getElementById("apiKeyInput").value;
+    window.services.settings.save({ selectedProvider, apiKey });
 });
