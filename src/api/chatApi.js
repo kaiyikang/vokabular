@@ -191,7 +191,6 @@ export function createChatApi(config = {}) {
     // Unified Chat API
     async function chat(promptContent, options = {}) {
         const provider = options.provider || apiConfig.defaultProvider;
-        console.log(provider);
         switch (provider) {
             case "openai":
                 return callOpenaiAPI(promptContent, options);
@@ -206,11 +205,29 @@ export function createChatApi(config = {}) {
         }
     }
 
+    async function listModelsByProvider(provider) {
+        switch (providers) {
+            case "openai":
+                const openai = new OpenAI();
+                return await openai.models.list();
+            case "anthropic":
+                const anthropic = new Anthropic();
+                return await anthropic.models.list({
+                    limit: 20,
+                });
+            case "openrouter":
+                return [];
+            case "deepseek":
+                return ["deepseek-chat", "deepseek-reasoner"];
+        }
+    }
+
     return {
         chat,
         callAnthropicAPI,
         callDeepSeekAPI,
         callOpenRouterAPI,
         callOpenaiAPI,
+        listModelsByProvider,
     };
 }
