@@ -1,7 +1,7 @@
-const { OpenAI } = require("openai");
-const { Anthropic } = require("@anthropic-ai/sdk");
-const dotenv = require("dotenv");
-
+import { OpenAI } from "openai";
+import { Anthropic } from "@anthropic-ai/sdk";
+import dotenv from "dotenv";
+import axios from "axios";
 dotenv.config();
 
 function validateClient(client, name) {
@@ -206,19 +206,28 @@ export function createChatApi(config = {}) {
     }
 
     async function listModelsByProvider(provider) {
-        switch (providers) {
-            case "openai":
-                const openai = new OpenAI();
-                return await openai.models.list();
-            case "anthropic":
-                const anthropic = new Anthropic();
-                return await anthropic.models.list({
-                    limit: 20,
-                });
-            case "openrouter":
-                return [];
-            case "deepseek":
-                return ["deepseek-chat", "deepseek-reasoner"];
+        try {
+            switch (provider) {
+                case "openai":
+                    const openai = new OpenAI();
+                    return await openai.models.list();
+                case "anthropic":
+                    const anthropic = new Anthropic();
+                    return await anthropic.models.list({
+                        limit: 20,
+                    });
+                case "openrouter":
+                    const response = await axios.get(
+                        "https://openrouter.ai/api/v1/models",
+                    );
+                    console.log(response.data);
+                    return response.data;
+                case "deepseek":
+                    return ["deepseek-chat", "deepseek-reasoner"];
+            }
+        } catch (error) {
+            console.error("Error during list models:", error.message);
+            throw error;
         }
     }
 

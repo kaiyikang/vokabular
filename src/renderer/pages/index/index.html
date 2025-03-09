@@ -45,31 +45,69 @@
                             class="h-22 w-full rounded-lg border-2 border-stone-200 bg-stone-50 p-2 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
                         ></textarea>
                     </div>
-                    <div class="flex justify-between">
-                        <label class="flex cursor-pointer items-center gap-2">
-                            <div class="relative">
-                                <input
-                                    type="checkbox"
-                                    class="peer sr-only"
-                                    id="clipboardToggle"
-                                />
-                                <div
-                                    class="peer h-5 w-10 rounded-full bg-stone-300 transition-colors duration-200 peer-checked:bg-stone-600"
-                                ></div>
-                                <div
-                                    class="absolute top-1 left-1 h-3 w-3 rounded-full bg-white transition-transform duration-200 peer-checked:translate-x-5"
-                                ></div>
-                            </div>
-                            <span class="text-sm text-stone-600"
-                                >Clipboard</span
+                    <div class="flex items-center justify-between gap-4">
+                        <!-- 添加 Model 标签 -->
+
+                        <!-- 下拉菜单 -->
+                        <div class="relative flex-grow">
+                            <select
+                                id="modelSelect"
+                                class="h-10 w-full min-w-[120px] appearance-none rounded-lg border-2 border-stone-200 bg-stone-50 px-3 py-2 pr-8 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none disabled:text-stone-400"
+                                required
                             >
-                        </label>
-                        <button
-                            id="clearInputBtn"
-                            class="rounded-lg border-1 border-stone-200 bg-white px-2 py-2 text-sm text-stone-600 shadow-sm transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
-                        >
-                            Clear
-                        </button>
+                                <option value="" disabled selected>
+                                    Select Model
+                                </option>
+                                <!-- Models will be populated dynamically -->
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-stone-700"
+                            >
+                                <svg
+                                    class="h-4 w-4 fill-current"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Clipboard 开关 -->
+                        <div>
+                            <label
+                                class="flex cursor-pointer items-center gap-2"
+                            >
+                                <div class="relative">
+                                    <input
+                                        type="checkbox"
+                                        class="peer sr-only"
+                                        id="clipboardToggle"
+                                    />
+                                    <div
+                                        class="peer h-5 w-10 rounded-full bg-stone-300 transition-colors duration-200 peer-checked:bg-stone-600"
+                                    ></div>
+                                    <div
+                                        class="absolute top-1 left-1 h-3 w-3 rounded-full bg-white transition-transform duration-200 peer-checked:translate-x-5"
+                                    ></div>
+                                </div>
+                                <span class="text-sm text-stone-600"
+                                    >Clipboard</span
+                                >
+                            </label>
+                        </div>
+
+                        <!-- Clear 按钮 -->
+                        <div>
+                            <button
+                                id="clearInputBtn"
+                                class="rounded-lg border-1 border-stone-200 bg-white px-2 py-2 text-sm text-stone-600 shadow-sm transition-all duration-200 hover:bg-stone-50 hover:text-stone-900 focus:border-stone-900 focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
+                            >
+                                Clear
+                            </button>
+                        </div>
                     </div>
 
                     <!-- 选中词显示区域 -->

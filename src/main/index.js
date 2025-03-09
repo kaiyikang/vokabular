@@ -38,10 +38,10 @@ function registerIpcHandlers() {
     );
     createIpcHandler("chat:getProviders", () => chatService.getProviders());
 
+    createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
     createIpcHandler("anki:addNoteToAnki", (fields) =>
         ankiService.addNoteToAnki(fields),
     );
-    createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
 
     createIpcHandler("main:getClipboardText", () => {
         return clipboard.readText();
