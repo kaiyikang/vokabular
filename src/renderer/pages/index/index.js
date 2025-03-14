@@ -1,3 +1,5 @@
+import alertUI from "../../components/AlertUI";
+
 const DEBUG = false;
 const inputSentence = document.getElementById("inputSentence");
 const outputExplanation = document.getElementById("outputExplanation");
@@ -12,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("settingBtn").addEventListener("click", () => {
         window.services.settings.open();
     });
-
+    alertUI.init();
     setInterval(updateAnkiButtonState, 10000);
     updateAnkiButtonState();
 });
@@ -37,6 +39,21 @@ inputSentence.addEventListener("input", async (event) => {
     inputSentence.value = singleLineText;
 });
 
+function validateSelectedModel() {
+    const selectedModel = document.getElementById("modelSelect");
+
+    if (selectedModel.value == "") {
+        alertUI.showAlert({
+            type: "error",
+            title: "Error",
+            message: "You need select a model!",
+        });
+        throw new Error("No model selected!");
+    }
+
+    return true;
+}
+
 inputSentence.addEventListener("dblclick", async (event) => {
     // Stop the interval since the user will select word
     stopClipboardMonitoring();
@@ -51,6 +68,7 @@ inputSentence.addEventListener("dblclick", async (event) => {
     const inputPhrase = event.target.value.trim();
     try {
         lockUI();
+        validateSelectedModel();
         const response = DEBUG
             ? "TEST"
             : await window.services.chat.generateWordExplanation(
@@ -125,12 +143,27 @@ saveToAnkiBtn.addEventListener("click", async (event) => {
 
 function validateAnkiFieldsBeforeSend(fields) {
     if (!fields.Sentence?.trim()) {
+        alertUI.showAlert({
+            type: "error",
+            title: "Error",
+            message: "You need a sentence as example!",
+        });
         throw new Error("Example Sentence is required");
     }
     if (!fields.Word?.trim()) {
+        alertUI.showAlert({
+            type: "error",
+            title: "Selected Word is required",
+            message: "You need the selected words!",
+        });
         throw new Error("Selected Word is required");
     }
     if (!fields.Definition?.trim()) {
+        alertUI.showAlert({
+            type: "error",
+            title: "Definition is required",
+            message: "Don't forget to enter the output!",
+        });
         throw new Error("Definition is required");
     }
     return true;
