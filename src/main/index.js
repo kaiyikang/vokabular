@@ -37,6 +37,10 @@ function registerIpcHandlers() {
             chatService.generateWordExplanation(queriedSentence, queriedWord),
     );
     createIpcHandler("chat:getProviders", () => chatService.getProviders());
+    createIpcHandler("chat:testConnection", ({ provider, apiKey }) => {
+        // TODO: finish this function
+        // return chatService.testConnection({ provider, apiKey });
+    });
 
     createIpcHandler("anki:checkHealth", () => ankiService.checkHealth());
     createIpcHandler("anki:addNoteToAnki", (fields) =>

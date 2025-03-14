@@ -42,11 +42,10 @@ const services = {
             });
         },
         // 测试API连接
-        testConnection: async (provider, apiKey, model) => {
+        testConnection: async (provider, apiKey) => {
             return await ipcRenderer.invoke("chat:testConnection", {
                 provider,
                 apiKey,
-                model,
             });
         },
     },
