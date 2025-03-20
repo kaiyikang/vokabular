@@ -71,16 +71,3 @@ export function createAnkiService(config) {
         addNoteToAnki,
     };
 }
-
-// (async () => {
-//     const fields = {
-//         Sentence: "SENTENCE",
-//         Word: "WORD",
-//         Definition: "DEF1",
-//         "Definition#2": "DEF2",
-//         Image: "IMG",
-//         Pronunciation: "RPO",
-//     };
-
-//     addNoteToAnki(fields);
-// })();

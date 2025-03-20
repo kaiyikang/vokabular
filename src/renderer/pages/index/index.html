@@ -7,9 +7,9 @@
     </head>
     <body>
         <div class="flex min-h-screen flex-col bg-stone-100 p-4">
-            <!-- 主要内容区域 -->
+            <!-- Title and Main -->
             <div class="flex-1 space-y-6">
-                <!-- 标题和设置按钮区域 -->
+                <!-- Title and Settings -->
                 <div class="flex items-center justify-between">
                     <!-- 标题部分 -->
                     <div class="flex items-end space-x-2">
@@ -29,9 +29,9 @@
                     </button>
                 </div>
 
-                <!-- 表单区域 -->
+                <!-- Main Input -->
                 <div class="space-y-2 pb-2">
-                    <!-- 输入区域 -->
+                    <!-- Sentence -->
                     <div class="form-group">
                         <label
                             for="inputSentence"
@@ -45,6 +45,7 @@
                             class="h-22 w-full rounded-lg border-2 border-stone-200 bg-stone-50 p-2 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none"
                         ></textarea>
                     </div>
+                    <!-- SelectModel / Clipboard / Clear button -->
                     <div class="flex items-center justify-between gap-4">
                         <!-- 添加 Model 标签 -->
 
@@ -110,7 +111,7 @@
                         </div>
                     </div>
 
-                    <!-- 选中词显示区域 -->
+                    <!-- Selected Word -->
                     <div class="form-group">
                         <label
                             for="selectedWordDisplay"
@@ -127,7 +128,7 @@
                         />
                     </div>
 
-                    <!-- 输出解释区域 -->
+                    <!-- Output Explanation -->
                     <div class="form-group">
                         <label
                             for="outputExplanation"
@@ -142,7 +143,7 @@
                         ></textarea>
                     </div>
 
-                    <!-- 状态栏 -->
+                    <!-- DEBUG: Status Bar -->
                     <div
                         id="statusBar"
                         class="flex items-center gap-2 rounded-lg bg-stone-100 p-2 text-stone-600"
@@ -152,7 +153,7 @@
                 </div>
             </div>
 
-            <!-- 底部按钮区域 -->
+            <!-- Button: Send to Anki -->
             <div class="mt-auto border-stone-200">
                 <div class="flex justify-end">
                     <button

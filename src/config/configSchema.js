@@ -1,7 +1,7 @@
 import Store from "electron-store";
 
-const configSchema = {
-    // ===== language learning =====
+export const configSchema = {
+    // ===== Language Learning =====
     nativeLanguage: {
         type: "string",
         default: "English",
@@ -10,10 +10,10 @@ const configSchema = {
         type: "string",
         default: "German",
     },
-    // ===== ai =====
+    // ===== AI Client =====
     defaultProvider: {
         type: "string",
-        default: "anthropic",
+        default: "openai",
     },
     // Openai
     openaiApiKey: {
@@ -38,11 +38,6 @@ const configSchema = {
         type: "string",
         default: "",
     },
-    openrouterBaseUrl: {
-        type: "string",
-        format: "uri",
-        default: "https://openrouter.ai/api/v1",
-    },
     openrouterDefaultModel: {
         type: "string",
         default: "google/gemini-2.0-flash-001",
@@ -51,11 +46,6 @@ const configSchema = {
     deepseekApiKey: {
         type: "string",
         default: "",
-    },
-    deepseekBaseUrl: {
-        type: "string",
-        format: "uri",
-        default: "https://api.deepseek.com",
     },
     deepseekDefaultModel: {
         type: "string",
@@ -70,10 +60,12 @@ const configSchema = {
         type: "string",
         default: "vocabsieve-notes",
     },
+    additionalProperties: false, // 禁止额外属性
 };
 
 const config = new Store({
     schema: configSchema,
+    clearInvalidConfig: true, // 清除无效配置
 });
 
 export default config;

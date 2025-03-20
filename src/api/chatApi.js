@@ -18,6 +18,7 @@ function validateClient(client, name) {
     return true;
 }
 
+// TODO: API should not know configuration
 export function createChatApi(config = {}) {
     const apiConfig = {
         // Default provider
@@ -31,9 +32,6 @@ export function createChatApi(config = {}) {
             model: config.get("openaiDefaultModel") || "gpt-4o-mini",
         },
         openrouter: {
-            baseURL:
-                process.env.openrouterBaseUrl ??
-                config.get("openrouterBaseUrl"),
             apiKey:
                 process.env.openrouterApiKey ?? config.get("openrouterApiKey"),
             model:
@@ -41,8 +39,6 @@ export function createChatApi(config = {}) {
                 "google/gemini-2.0-flash-001",
         },
         deepseek: {
-            baseURL:
-                process.env.deepseekBaseUrl ?? config.get("deepseekBaseUrl"),
             apiKey: process.env.deepseekApiKey ?? config.get("deepseekApiKey"),
             model: config.get("deepseekDefaultModel") || "deepseek-chat",
         },
@@ -61,22 +57,20 @@ export function createChatApi(config = {}) {
                   apiKey: apiConfig.openai.apiKey,
               })
             : null,
-        openrouter:
-            apiConfig.openrouter.baseURL && apiConfig.openrouter.apiKey
-                ? new OpenAI({
-                      baseURL: apiConfig.openrouter.baseURL,
-                      apiKey: apiConfig.openrouter.apiKey,
-                      dangerouslyAllowBrowser: true,
-                  })
-                : null,
-        deepseek:
-            apiConfig.deepseek.baseURL && apiConfig.deepseek.apiKey
-                ? new OpenAI({
-                      baseURL: apiConfig.deepseek.baseURL,
-                      apiKey: apiConfig.deepseek.apiKey,
-                      dangerouslyAllowBrowser: true,
-                  })
-                : null,
+        openrouter: apiConfig.openrouter.apiKey
+            ? new OpenAI({
+                  baseURL: "https://openrouter.ai/api/v1",
+                  apiKey: apiConfig.openrouter.apiKey,
+                  dangerouslyAllowBrowser: true,
+              })
+            : null,
+        deepseek: apiConfig.deepseek.apiKey
+            ? new OpenAI({
+                  baseURL: "https://api.deepseek.com",
+                  apiKey: apiConfig.deepseek.apiKey,
+                  dangerouslyAllowBrowser: true,
+              })
+            : null,
         anthropic: apiConfig.anthropic.apiKey
             ? new Anthropic({
                   apiKey: apiConfig.anthropic.apiKey,
@@ -188,7 +182,7 @@ export function createChatApi(config = {}) {
         }
     }
 
-    // Unified Chat API
+    // TODO: Should not use config
     async function chat(promptContent, options = {}) {
         const provider = options.provider || apiConfig.defaultProvider;
         switch (provider) {
@@ -205,38 +199,128 @@ export function createChatApi(config = {}) {
         }
     }
 
-    async function listModelsByProvider(provider) {
+    /**
+     * 向AI提供商发送API请求的基础函数
+     * @param {string} provider - AI提供商名称
+     * @param {string} apiKey - API密钥
+     * @param {boolean} isTest - 是否为连接测试（影响某些提供商的端点选择）
+     * @returns {Promise<Object>} - 请求结果
+     */
+    async function requestProviderAPI(provider, apiKey, isTest = false) {
         try {
-            switch (provider) {
-                case "openai":
-                    const openai = new OpenAI();
-                    return await openai.models.list();
-                case "anthropic":
-                    const anthropic = new Anthropic();
-                    return await anthropic.models.list({
-                        limit: 20,
-                    });
-                case "openrouter":
-                    const response = await axios.get(
-                        "https://openrouter.ai/api/v1/models",
-                    );
-                    console.log(response.data);
-                    return response.data;
-                case "deepseek":
-                    return ["deepseek-chat", "deepseek-reasoner"];
+            // 验证输入
+            if (!provider || !apiKey) {
+                return {
+                    success: false,
+                    message: "Provider and API key are required",
+                };
             }
+
+            let endpoint;
+            let headers = {
+                "Content-Type": "application/json",
+            };
+
+            // 根据不同提供商设置不同的请求参数
+            switch (provider.toLowerCase()) {
+                case "openai":
+                    endpoint = "https://api.openai.com/v1/models";
+                    headers["Authorization"] = `Bearer ${apiKey}`;
+                    break;
+
+                case "openrouter":
+                    // 测试连接时使用不同的端点
+                    endpoint = isTest
+                        ? "https://openrouter.ai/api/v1/key"
+                        : "https://openrouter.ai/api/v1/models";
+                    headers["Authorization"] = `Bearer ${apiKey}`;
+                    break;
+
+                case "deepseek":
+                    endpoint = "https://api.deepseek.com/v1/models";
+                    headers["Authorization"] = `Bearer ${apiKey}`;
+                    break;
+
+                case "anthropic":
+                    endpoint = "https://api.anthropic.com/v1/models";
+                    headers["x-api-key"] = apiKey;
+                    headers["anthropic-version"] = "2023-06-01";
+                    break;
+
+                default:
+                    return {
+                        success: false,
+                        message: `Unsupported provider: ${provider}`,
+                    };
+            }
+
+            const response = await axios({
+                method: "GET",
+                url: endpoint,
+                headers: headers,
+                timeout: 10000, // 10秒
+            });
+
+            return {
+                success: response.status >= 200 && response.status < 300,
+                data: response.data,
+                status: response.status,
+            };
         } catch (error) {
-            console.error("Error during list models:", error.message);
-            throw error;
+            console.error(
+                `API request error for ${provider}:`,
+                error.code || error.message,
+            );
+            return {
+                success: false,
+                message: error.message,
+            };
         }
+    }
+
+    /**
+     * 测试与AI提供商的连接
+     * @param {string} provider - AI提供商名称
+     * @param {string} apiKey - API密钥
+     * @returns {Promise<Object>} - 连接测试结果
+     */
+    async function testConnectionByProvider(provider, apiKey) {
+        const result = await requestProviderAPI(provider, apiKey, true);
+        return {
+            success: result.success,
+            message: result.message,
+        };
+    }
+
+    /**
+     * 获取AI提供商支持的模型列表
+     * @param {string} provider - AI提供商名称
+     * @param {string} apiKey - API密钥
+     * @returns {Promise<Array|Object>} - 模型ID列表或错误对象
+     */
+    async function listModelsByProvider(provider, apiKey) {
+        const result = await requestProviderAPI(provider, apiKey, false);
+
+        if (!result.success) {
+            return result; // 返回错误信息
+        }
+
+        // 处理不同提供商的响应格式
+        if (Array.isArray(result.data)) {
+            // 直接返回模型ID列表
+            return result.data.map((item) => item.id);
+        } else if (result.data && Array.isArray(result.data.data)) {
+            // 处理包含data数组的响应（如Anthropic）
+            return result.data.data.map((item) => item.id);
+        }
+
+        // 无法识别的响应格式
+        return [];
     }
 
     return {
         chat,
-        callAnthropicAPI,
-        callDeepSeekAPI,
-        callOpenRouterAPI,
-        callOpenaiAPI,
         listModelsByProvider,
+        testConnectionByProvider,
     };
 }

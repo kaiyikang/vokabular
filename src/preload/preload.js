@@ -1,74 +1,68 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-const services = {
-    chat: {
-        generateWordExplanation: async (queriedSentence, queriedWord) => {
-            return await ipcRenderer.invoke("chat:generateWordExplanation", {
+function createIpcProxy(config) {
+    const result = {};
+    Object.entries(config).forEach(([serviceName, methods]) => {
+        result[serviceName] = {};
+
+        methods.forEach((method) => {
+            const methodName =
+                typeof method === "string" ? method : method.name;
+            const action = method.action || "invoke";
+            const channel = method.channel || `${serviceName}:${methodName}`;
+
+            if (method.paramTransform) {
+                result[serviceName][methodName] = (...args) =>
+                    ipcRenderer[action](
+                        channel,
+                        method.paramTransform(...args),
+                    );
+            } else {
+                result[serviceName][methodName] = (...args) =>
+                    ipcRenderer[action](channel, ...args);
+            }
+        });
+    });
+
+    return result;
+}
+
+const servicesConfig = {
+    chat: [
+        {
+            name: "generateWordExplanation",
+            paramTransform: (queriedSentence, queriedWord) => ({
                 queriedSentence,
                 queriedWord,
-            });
+            }),
         },
-        // 添加获取AI提供商列表的方法
-        getProviders: async () => {
-            return await ipcRenderer.invoke("chat:getProviders");
+        "getProviders",
+        "getModelsForProvider",
+        {
+            name: "updateSelectedModel",
+            paramTransform: (provider, modelId) => ({ provider, modelId }),
         },
-        // 添加获取特定提供商模型列表的方法
-        getModelsForProvider: async (provider) => {
-            return await ipcRenderer.invoke(
-                "chat:getModelsForProvider",
-                provider,
-            );
+        "testConnection",
+    ],
+    anki: [
+        "addNoteToAnki",
+        { name: "checkAnkiHealth", channel: "anki:checkHealth" },
+        "getAnkiSettings",
+        {
+            name: "setAnkiSettings",
+            action: "send",
+            channel: "anki:setAnkiSettings",
         },
-        // 获取当前Chat设置
-        getChatSettings: async () => {
-            return await ipcRenderer.invoke("chat:getChatSettings");
-        },
-        // 更新AI提供商
-        updateProvider: async (provider) => {
-            return await ipcRenderer.invoke("chat:updateProvider", provider);
-        },
-        // 更新API密钥
-        updateApiKey: async (provider, apiKey) => {
-            return await ipcRenderer.invoke("chat:updateApiKey", {
-                provider,
-                apiKey,
-            });
-        },
-        // 更新选定的模型
-        updateSelectedModel: async (provider, modelId) => {
-            return await ipcRenderer.invoke("chat:updateSelectedModel", {
-                provider,
-                modelId,
-            });
-        },
-        // 测试API连接
-        testConnection: async (provider, apiKey) => {
-            return await ipcRenderer.invoke("chat:testConnection", {
-                provider,
-                apiKey,
-            });
-        },
-    },
-    anki: {
-        addNoteToAnki: async (fields) => {
-            return await ipcRenderer.invoke("anki:addNoteToAnki", fields);
-        },
-        checkAnkiHealth: async () => {
-            return await ipcRenderer.invoke("anki:checkHealth");
-        },
-        // ===== Settings =====
-        getAnkiSettings: async () => {
-            return await ipcRenderer.invoke("anki:getAnkiSettings");
-        },
-        setAnkiSettings: async () => {
-            return await ipcRenderer.send("anki:getAnkiSettings", settings);
-        },
-    },
-    settings: {
-        open: () => ipcRenderer.send("settings:open"),
-        save: (settings) => ipcRenderer.invoke("settings:save", settings),
-    },
+    ],
+    settings: [
+        { name: "open", action: "send" },
+        "save",
+        "loadDefaultProvider",
+        "loadApiKeyByProvider",
+    ],
 };
+
+const services = createIpcProxy(servicesConfig);
 
 const electronApi = {
     getClipboardText: () => ipcRenderer.invoke("main:getClipboardText"),

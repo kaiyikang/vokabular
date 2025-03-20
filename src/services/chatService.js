@@ -35,5 +35,15 @@ export function createChatService(config) {
         getProviders() {
             return ["openai", "openrouter", "deepseek", "anthropic"];
         },
+        async testConnection(provider, apiKey) {
+            const result = await api.testConnectionByProvider(provider, apiKey);
+            return result.success;
+        },
+        async getModelsByConfig() {
+            const provider = config.get("defaultProvider");
+            const apiKey = config.get(`${provider}ApiKey`);
+
+            const models = await api.listModelsByProvider(provider, apiKey);
+        },
     };
 }
