@@ -43,6 +43,7 @@ const servicesConfig = {
             paramTransform: (provider, modelId) => ({ provider, modelId }),
         },
         "testConnection",
+        "getModelsByProvider",
     ],
     anki: [
         "addNoteToAnki",

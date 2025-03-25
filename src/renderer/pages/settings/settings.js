@@ -11,12 +11,13 @@ const connectionSuccess = document.getElementById("connectionSuccess");
 const connectionError = document.getElementById("connectionError");
 const connectionLoading = document.getElementById("connectionLoading");
 
+const SUPPORTED_PROVIDERS = ["openai", "openrouter", "deepseek", "anthropic"];
+
 let tempConfig;
 
 document.addEventListener("DOMContentLoaded", async () => {
     tempConfig = await initialConfig();
     alert.init();
-    updateClientConnectBtnState();
 });
 
 window.addEventListener("beforeunload", () => {
@@ -30,6 +31,7 @@ cancelBtn.addEventListener("click", () => {
 
 saveBtn.addEventListener("click", async () => {
     await settingsService.save(tempConfig);
+    window.close();
 });
 
 clientConnectBtn.addEventListener("click", async () => {
@@ -42,7 +44,7 @@ clientConnectBtn.addEventListener("click", async () => {
 
     const connectResult = await chatService.testConnection(provider, apiKey);
 
-    console.log(`AI Client connection resutl: ${connectResult}`);
+    console.log(`AI Client connection result: ${connectResult}`);
     if (connectResult) {
         connectionSuccess.classList.remove("hidden");
         connectionError.classList.add("hidden");
@@ -55,18 +57,60 @@ clientConnectBtn.addEventListener("click", async () => {
 });
 
 providerSelect.addEventListener("change", async (event) => {
-    updateClientConnectBtnState();
     tempConfig.defaultProvider = event.target.value;
     apiKeyInput.value = tempConfig[`${event.target.value}ApiKey`];
 });
 
 apiKeyInput.addEventListener("input", (event) => {
-    updateClientConnectBtnState();
     tempConfig.defaultProvider = providerSelect.value;
     tempConfig[`${providerSelect.value}ApiKey`] = apiKeyInput.value;
 });
 
+// list models
+modelSelect.addEventListener("click", async (event) => {
+    try {
+        const models = await window.services.chat.getModelsByProvider(
+            providerSelect.value,
+            apiKeyInput.value,
+        );
+
+        if (Array.isArray(models) && models.length !== 0) {
+            const sortedModels = [...models].sort();
+            updateModelOptions(sortedModels);
+        } else {
+            modelSelect.innerHTML = `<option value="" disabled selected>Failed to load models</option>`;
+        }
+    } catch (error) {
+        console.error("Error loading models:", error);
+        modelSelect.innerHTML =
+            '<option value="" disabled selected>Error loading models</option>';
+    } finally {
+    }
+});
+
 // ===== Functions =====
+
+function updateModelOptions(models) {
+    // 清空现有选项
+    modelSelect.innerHTML = "";
+
+    // 没有模型时显示提示
+    if (!models || models.length === 0) {
+        const noModelsOption = document.createElement("option");
+        noModelsOption.disabled = true;
+        noModelsOption.textContent = "No models available";
+        modelSelect.appendChild(noModelsOption);
+        return;
+    }
+
+    // 添加每个模型作为选项
+    models.forEach((modelId) => {
+        const option = document.createElement("option");
+        option.value = modelId;
+        option.textContent = modelId;
+        modelSelect.appendChild(option);
+    });
+}
 
 async function initialConfig() {
     // load and render provider from store as default
@@ -87,19 +131,4 @@ async function initialConfig() {
         anthropicApiKey:
             await settingsService.loadApiKeyByProvider("anthropic"),
     };
-}
-
-function updateClientConnectBtnState() {
-    const selectedProvider = providerSelect.value;
-    const apiKey = apiKeyInput.value;
-    // reset connection status
-    connectionLoading.classList.remove("hidden");
-    connectionSuccess.classList.add("hidden");
-    connectionError.classList.add("hidden");
-
-    if (selectedProvider && apiKey) {
-        clientConnectBtn.disabled = false;
-    } else {
-        clientConnectBtn.disabled = true;
-    }
 }

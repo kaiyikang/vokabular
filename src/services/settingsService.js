@@ -1,4 +1,11 @@
 export function createSettingService(config) {
+    const SUPPORTED_PROVIDERS = [
+        "openai",
+        "openrouter",
+        "deepseek",
+        "anthropic",
+    ];
+
     return {
         save(newConfig) {
             try {
@@ -14,18 +21,18 @@ export function createSettingService(config) {
             return config.get("defaultProvider");
         },
         loadApiKeyByProvider(provider) {
-            switch (provider.toLowerCase()) {
-                case "openai":
-                    return config.get("openaiApiKey");
-                case "openrouter":
-                    return config.get("openrouterApiKey");
-                case "deepseek":
-                    return config.get("deepseekApiKey");
-                case "anthropic":
-                    return config.get("anthropicApiKey");
-                default:
-                    return "";
+            const providerLowCase = provider.toLowerCase();
+            if (SUPPORTED_PROVIDERS.includes(providerLowCase)) {
+                return config.get(`${providerLowCase}ApiKey`);
             }
+            return "";
+        },
+        loadDefaultModelByProvider(provider) {
+            const providerLowCase = provider.toLowerCase();
+            if (SUPPORTED_PROVIDERS.includes(providerLowCase)) {
+                return config.get(`${providerLowCase}DefaultModel`);
+            }
+            return "";
         },
     };
 }

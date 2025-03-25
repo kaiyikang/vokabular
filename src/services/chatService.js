@@ -4,6 +4,7 @@ export function createChatService(config) {
     const api = createChatApi(config);
     const nativeLanguage = config.get("nativeLanguage");
     const targetLanguage = config.get("targetLanguage");
+
     return {
         async generateWordExplanation(sourceText = "", focusWord = "") {
             const examples =
@@ -39,11 +40,10 @@ export function createChatService(config) {
             const result = await api.testConnectionByProvider(provider, apiKey);
             return result.success;
         },
-        async getModelsByConfig() {
-            const provider = config.get("defaultProvider");
-            const apiKey = config.get(`${provider}ApiKey`);
-
+        async getModelsByProvider(provider, apiKey) {
             const models = await api.listModelsByProvider(provider, apiKey);
+
+            return models;
         },
     };
 }

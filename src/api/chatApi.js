@@ -278,12 +278,6 @@ export function createChatApi(config = {}) {
         }
     }
 
-    /**
-     * 测试与AI提供商的连接
-     * @param {string} provider - AI提供商名称
-     * @param {string} apiKey - API密钥
-     * @returns {Promise<Object>} - 连接测试结果
-     */
     async function testConnectionByProvider(provider, apiKey) {
         const result = await requestProviderAPI(provider, apiKey, true);
         return {
@@ -292,29 +286,19 @@ export function createChatApi(config = {}) {
         };
     }
 
-    /**
-     * 获取AI提供商支持的模型列表
-     * @param {string} provider - AI提供商名称
-     * @param {string} apiKey - API密钥
-     * @returns {Promise<Array|Object>} - 模型ID列表或错误对象
-     */
     async function listModelsByProvider(provider, apiKey) {
         const result = await requestProviderAPI(provider, apiKey, false);
 
         if (!result.success) {
-            return result; // 返回错误信息
+            return [];
         }
 
-        // 处理不同提供商的响应格式
         if (Array.isArray(result.data)) {
-            // 直接返回模型ID列表
             return result.data.map((item) => item.id);
         } else if (result.data && Array.isArray(result.data.data)) {
-            // 处理包含data数组的响应（如Anthropic）
             return result.data.data.map((item) => item.id);
         }
 
-        // 无法识别的响应格式
         return [];
     }
 
