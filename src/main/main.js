@@ -5,7 +5,7 @@ import { createAnkiService } from "../services/ankiService";
 import { createSettingService } from "../services/settingsService";
 import { createWindow } from "./windowManager";
 
-// config.clear();
+config.clear();
 const chatService = createChatService(config);
 const ankiService = createAnkiService(config);
 const settingsService = createSettingService(config);
@@ -47,6 +47,7 @@ function registerIpcHandlers() {
         "save",
         "loadApiKeyByProvider",
         "loadDefaultProvider",
+        "loadDefaultModelByProvider",
     ]);
 }
 

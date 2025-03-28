@@ -29,9 +29,21 @@ export function createChatService(config) {
                     text: filledPrompt,
                 },
             ];
+            const provider = config.get("defaultProvider");
+            const apiKey = config.get(`${provider}ApiKey`);
+            const model = config.get(`${provider}DefaultModel`);
 
-            const result = await api.chat(promptContent);
-            return result;
+            console.log(
+                "debug from chat: " + provider + "/ " + apiKey + "/ " + model,
+            );
+
+            const answer = await api.chat(
+                promptContent,
+                provider,
+                apiKey,
+                model,
+            );
+            return answer;
         },
         getProviders() {
             return ["openai", "openrouter", "deepseek", "anthropic"];

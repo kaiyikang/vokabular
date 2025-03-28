@@ -59,6 +59,10 @@ clientConnectBtn.addEventListener("click", async () => {
 providerSelect.addEventListener("change", async (event) => {
     tempConfig.defaultProvider = event.target.value;
     apiKeyInput.value = tempConfig[`${event.target.value}ApiKey`];
+    const defaultModel = await settingsService.loadDefaultModelByProvider(
+        event.target.value,
+    );
+    modelSelect.innerHTML = `<option value="${defaultModel}" disabled selected>${defaultModel}</option>`;
 });
 
 apiKeyInput.addEventListener("input", (event) => {
@@ -66,7 +70,7 @@ apiKeyInput.addEventListener("input", (event) => {
     tempConfig[`${providerSelect.value}ApiKey`] = apiKeyInput.value;
 });
 
-// list models
+// Click list models
 modelSelect.addEventListener("click", async (event) => {
     try {
         const models = await window.services.chat.getModelsByProvider(
@@ -75,7 +79,7 @@ modelSelect.addEventListener("click", async (event) => {
         );
 
         if (Array.isArray(models) && models.length !== 0) {
-            const sortedModels = [...models].sort();
+            const sortedModels = [...models].sort().reverse();
             updateModelOptions(sortedModels);
         } else {
             modelSelect.innerHTML = `<option value="" disabled selected>Failed to load models</option>`;
@@ -86,6 +90,10 @@ modelSelect.addEventListener("click", async (event) => {
             '<option value="" disabled selected>Error loading models</option>';
     } finally {
     }
+});
+
+modelSelect.addEventListener("change", () => {
+    tempConfig[`${providerSelect.value}Default`] = modelSelect.value;
 });
 
 // ===== Functions =====
@@ -120,15 +128,32 @@ async function initialConfig() {
     // load and render api key based on provider
     apiKeyInput.value = await settingsService.loadApiKeyByProvider(provider);
 
+    // load selected model
+    const defaultModel =
+        await settingsService.loadDefaultModelByProvider(provider);
+    modelSelect.innerHTML = `<option value="${defaultModel}" disabled selected>${defaultModel}</option>`;
+
     // initial temp config
     // It should always map to the configSchema.js
     return {
         defaultProvider: provider,
+
         openaiApiKey: await settingsService.loadApiKeyByProvider("openai"),
+        openaiDefaultModel:
+            await settingsService.loadDefaultModelByProvider("openai"),
+
         openrouterApiKey:
             await settingsService.loadApiKeyByProvider("openrouter"),
+        openrouterDefaultModel:
+            await settingsService.loadDefaultModelByProvider("openrouter"),
+
         deepseekApiKey: await settingsService.loadApiKeyByProvider("deepseek"),
+        deepseekDefaultModel:
+            await settingsService.loadDefaultModelByProvider("deepseek"),
+
         anthropicApiKey:
             await settingsService.loadApiKeyByProvider("anthropic"),
+        anthropicDefaultModel:
+            await settingsService.loadDefaultModelByProvider("anthropic"),
     };
 }

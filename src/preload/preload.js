@@ -60,6 +60,7 @@ const servicesConfig = {
         "save",
         "loadDefaultProvider",
         "loadApiKeyByProvider",
+        "loadDefaultModelByProvider",
     ],
 };
 

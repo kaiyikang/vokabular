@@ -39,21 +39,6 @@ inputSentence.addEventListener("input", async (event) => {
     inputSentence.value = singleLineText;
 });
 
-function validateSelectedModel() {
-    const selectedModel = document.getElementById("modelSelect");
-
-    if (selectedModel.value == "") {
-        alertUI.showAlert({
-            type: "error",
-            title: "Error",
-            message: "You need select a model!",
-        });
-        throw new Error("No model selected!");
-    }
-
-    return true;
-}
-
 inputSentence.addEventListener("dblclick", async (event) => {
     // Stop the interval since the user will select word
     stopClipboardMonitoring();
@@ -66,9 +51,9 @@ inputSentence.addEventListener("dblclick", async (event) => {
 
     const selectedWord = trimmedText;
     const inputPhrase = event.target.value.trim();
+
     try {
         lockUI();
-        validateSelectedModel();
         const response = DEBUG
             ? "TEST"
             : await window.services.chat.generateWordExplanation(
