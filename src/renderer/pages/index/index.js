@@ -54,6 +54,8 @@ inputSentence.addEventListener("dblclick", async (event) => {
 
     try {
         lockUI();
+        console.log("> selectedWord: " + selectedWord);
+        console.log("> inputPhrase: " + inputPhrase);
         const response = DEBUG
             ? "TEST"
             : await window.services.chat.generateWordExplanation(

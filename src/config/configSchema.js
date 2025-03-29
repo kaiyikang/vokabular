@@ -10,6 +10,7 @@ export const configSchema = {
         type: "string",
         default: "German",
     },
+
     // ===== AI Client =====
     defaultProvider: {
         type: "string",
@@ -51,6 +52,13 @@ export const configSchema = {
         type: "string",
         default: "deepseek-chat",
     },
+
+    // ====== Prompt ======
+    promptTemplate: {
+        type: "string",
+        default: "",
+    },
+
     // ===== anki ======
     ankiDockerName: {
         type: "string",

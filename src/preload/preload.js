@@ -29,13 +29,7 @@ function createIpcProxy(config) {
 
 const servicesConfig = {
     chat: [
-        {
-            name: "generateWordExplanation",
-            paramTransform: (queriedSentence, queriedWord) => ({
-                queriedSentence,
-                queriedWord,
-            }),
-        },
+        "generateWordExplanation",
         "getProviders",
         "getModelsForProvider",
         {

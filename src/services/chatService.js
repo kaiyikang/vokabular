@@ -4,6 +4,7 @@ export function createChatService(config) {
     const api = createChatApi(config);
     const nativeLanguage = config.get("nativeLanguage");
     const targetLanguage = config.get("targetLanguage");
+    const promptTemplate = config.get("promptTemplate");
 
     return {
         async generateWordExplanation(sourceText = "", focusWord = "") {
@@ -32,10 +33,6 @@ export function createChatService(config) {
             const provider = config.get("defaultProvider");
             const apiKey = config.get(`${provider}ApiKey`);
             const model = config.get(`${provider}DefaultModel`);
-
-            console.log(
-                "debug from chat: " + provider + "/ " + apiKey + "/ " + model,
-            );
 
             const answer = await api.chat(
                 promptContent,
