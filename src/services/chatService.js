@@ -50,9 +50,13 @@ export function createChatService(config) {
             return result.success;
         },
         async getModelsByProvider(provider, apiKey) {
-            const models = await api.listModelsByProvider(provider, apiKey);
-
-            return models;
+            try {
+                const models = await api.listModelsByProvider(provider, apiKey);
+                return models;
+            } catch (error) {
+                console.error("Error fetching models:", error);
+                throw new Error("Failed to fetch models.");
+            }
         },
     };
 }

@@ -88,7 +88,6 @@ modelSelect.addEventListener("click", async (event) => {
         console.error("Error loading models:", error);
         modelSelect.innerHTML =
             '<option value="" disabled selected>Error loading models</option>';
-    } finally {
     }
 });
 

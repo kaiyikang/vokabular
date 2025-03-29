@@ -178,6 +178,7 @@ export function createChatApi(config = {}) {
 
     async function testConnectionByProvider(provider, apiKey) {
         const result = await requestProviderAPI(provider, apiKey, true);
+
         return {
             success: result.success,
             message: result.message,
@@ -185,19 +186,26 @@ export function createChatApi(config = {}) {
     }
 
     async function listModelsByProvider(provider, apiKey) {
-        const result = await requestProviderAPI(provider, apiKey, false);
+        try {
+            const result = await requestProviderAPI(provider, apiKey, false);
+            // TODO: Uncomment the following lines when the client is available
+            // const client = getClient(provider, apiKey);
+            // const result = await client.models.list();
 
-        if (!result.success) {
-            return [];
+            if (Array.isArray(result.data)) {
+                return result.data.map((item) => item.id);
+            } else if (result.data && Array.isArray(result.data.data)) {
+                return result.data.data.map((item) => item.id);
+            }
+        } catch (error) {
+            console.error(
+                `Error fetching models for provider ${provider}:`,
+                error,
+            );
+            throw new Error(
+                `Failed to fetch models for provider ${provider}: ${error.message}`,
+            );
         }
-
-        if (Array.isArray(result.data)) {
-            return result.data.map((item) => item.id);
-        } else if (result.data && Array.isArray(result.data.data)) {
-            return result.data.data.map((item) => item.id);
-        }
-
-        return [];
     }
 
     return {
