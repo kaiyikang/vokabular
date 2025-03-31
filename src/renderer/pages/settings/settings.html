@@ -19,7 +19,7 @@
         </div> -->
 
         <div class="flex min-h-screen flex-col p-4">
-            <div class="flex-1">
+            <div class="flex-1 space-y-6">
                 <!-- 标题部分 -->
                 <div class="flex items-end space-x-2">
                     <h1 class="text-4xl font-semibold">Settings</h1>
@@ -121,18 +121,28 @@
                                     </option>
                                     <!-- Models will be populated dynamically -->
                                 </select>
-                                
                             </div>
                             <button
                                 id="reloadModels"
-                                class="ml-2 h-10 w-10 rounded-lg border-2 border-stone-200 bg-stone-50 transition-all duration-200 hover:border-stone-700 hover:bg-white focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none disabled:text-stone-400"
-                                type="button"
+                                class="ml-2 flex h-10 w-10 items-center justify-center rounded-lg border-2 border-stone-200 px-2 py-1 text-sm text-stone-600 transition-all duration-200 hover:border-stone-700 hover:bg-white hover:text-stone-900 focus:border-stone-900 focus:bg-white focus:ring-2 focus:ring-stone-900/20 focus:outline-none disabled:text-stone-400"
                                 aria-label="Reload Models"
                             >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20q-3.35 0-5.675-2.325T4 12t2.325-5.675T12 4q1.725 0 3.3.712T18 6.75V5q0-.425.288-.712T19 4t.713.288T20 5v5q0 .425-.288.713T19 11h-5q-.425 0-.712-.288T13 10t.288-.712T14 9h3.2q-.8-1.4-2.187-2.2T12 6Q9.5 6 7.75 7.75T6 12t1.75 4.25T12 18q1.7 0 3.113-.862t2.187-2.313q.2-.35.563-.487t.737-.013q.4.125.575.525t-.025.75q-1.025 2-2.925 3.2T12 20" stroke-width="0.5" stroke="currentColor"/></svg>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    class="mx-auto"
+                                >
+                                    <path
+                                        fill="currentColor"
+                                        d="M12 20q-3.35 0-5.675-2.325T4 12t2.325-5.675T12 4q1.725 0 3.3.712T18 6.75V5q0-.425.288-.712T19 4t.713.288T20 5v5q0 .425-.288.713T19 11h-5q-.425 0-.712-.288T13 10t.288-.712T14 9h3.2q-.8-1.4-2.187-2.2T12 6Q9.5 6 7.75 7.75T6 12t1.75 4.25T12 18q1.7 0 3.113-.862t2.187-2.313q.2-.35.563-.487t.737-.013q.4.125.575.525t-.025.75q-1.025 2-2.925 3.2T12 20"
+                                        stroke-width="0.5"
+                                        stroke="currentColor"
+                                    />
+                                </svg>
                             </button>
                         </div>
-
                     </div>
 
                     <div class="flex items-center gap-2">

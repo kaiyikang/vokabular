@@ -4,6 +4,7 @@ const chatService = window.services.chat;
 const cancelBtn = document.getElementById("cancelSettingsBtn");
 const saveBtn = document.getElementById("saveSettingsBtn");
 const clientConnectBtn = document.getElementById("clientConnectBtn");
+const reloadModelsBtn = document.getElementById("reloadModels");
 
 const providerSelect = document.getElementById("providerSelect");
 const apiKeyInput = document.getElementById("apiKeyInput");
@@ -15,6 +16,8 @@ const SUPPORTED_PROVIDERS = ["openai", "openrouter", "deepseek", "anthropic"];
 
 let tempConfig;
 
+// ====== Setup =====
+
 document.addEventListener("DOMContentLoaded", async () => {
     tempConfig = await initialConfig();
     alert.init();
@@ -25,14 +28,20 @@ window.addEventListener("beforeunload", () => {
     tempConfig = null;
 });
 
+// ===== Cancel Button =====
+
 cancelBtn.addEventListener("click", () => {
     window.close();
 });
+
+// ===== Save Button =====
 
 saveBtn.addEventListener("click", async () => {
     await settingsService.save(tempConfig);
     window.close();
 });
+
+// ===== ClientConnect Button =====
 
 clientConnectBtn.addEventListener("click", async () => {
     const provider = providerSelect.value;
@@ -57,8 +66,8 @@ clientConnectBtn.addEventListener("click", async () => {
 });
 
 providerSelect.addEventListener("change", async (event) => {
-    tempConfig.defaultProvider = event.target.value;
-    apiKeyInput.value = tempConfig[`${event.target.value}ApiKey`];
+    tempConfig.defaultProvider = event.target.value.toLowerCase();
+    apiKeyInput.value = tempConfig[`${event.target.value.toLowerCase()}ApiKey`];
     const defaultModel = await settingsService.loadDefaultModelByProvider(
         event.target.value,
     );
@@ -66,42 +75,48 @@ providerSelect.addEventListener("change", async (event) => {
 });
 
 apiKeyInput.addEventListener("input", (event) => {
-    tempConfig.defaultProvider = providerSelect.value;
-    tempConfig[`${providerSelect.value}ApiKey`] = apiKeyInput.value;
+    tempConfig.defaultProvider = providerSelect.value.toLowerCase();
+    tempConfig[`${providerSelect.value.toLowerCase()}ApiKey`] =
+        apiKeyInput.value;
 });
 
 // Click list models
-modelSelect.addEventListener("click", async (event) => {
-    try {
-        const models = await window.services.chat.getModelsByProvider(
-            providerSelect.value,
-            apiKeyInput.value,
-        );
+reloadModelsBtn.addEventListener("click", async (event) => {
+    const errorMessage =
+        '<option value="" disabled selected>Failed to load models, please check API key</option>';
 
-        if (Array.isArray(models) && models.length !== 0) {
-            const sortedModels = [...models].sort().reverse();
-            updateModelOptions(sortedModels);
-        } else {
-            modelSelect.innerHTML = `<option value="" disabled selected>Failed to load models</option>`;
-        }
-    } catch (error) {
-        console.error("Error loading models:", error);
-        modelSelect.innerHTML =
-            '<option value="" disabled selected>Error loading models</option>';
+    if (apiKeyInput.value === "") {
+        modelSelect.innerHTML = errorMessage;
+    }
+
+    const models = await window.services.chat.getModelsByProvider(
+        providerSelect.value,
+        apiKeyInput.value,
+    );
+
+    if (Array.isArray(models) && models.length !== 0) {
+        const sortedModels = [...models].sort().reverse();
+        updateModelOptions(sortedModels);
+    } else {
+        modelSelect.innerHTML = errorMessage;
     }
 });
 
 modelSelect.addEventListener("change", () => {
-    tempConfig[`${providerSelect.value}Default`] = modelSelect.value;
+    tempConfig[`${providerSelect.value.toLowerCase()}DefaultModel`] =
+        modelSelect.value;
 });
 
 // ===== Functions =====
 
 function updateModelOptions(models) {
-    // 清空现有选项
+    const defaultSelectedModel =
+        tempConfig[`${providerSelect.value.toLowerCase()}DefaultModel`];
+
+    // Clear existing options
     modelSelect.innerHTML = "";
 
-    // 没有模型时显示提示
+    // Handle no models available
     if (!models || models.length === 0) {
         const noModelsOption = document.createElement("option");
         noModelsOption.disabled = true;
@@ -110,17 +125,25 @@ function updateModelOptions(models) {
         return;
     }
 
-    // 添加每个模型作为选项
-    models.forEach((modelId) => {
+    const selectedModel = models.includes(defaultSelectedModel)
+        ? defaultSelectedModel
+        : models[0];
+
+    const options = models.map((modelId) => {
         const option = document.createElement("option");
         option.value = modelId;
         option.textContent = modelId;
-        modelSelect.appendChild(option);
+        option.selected = modelId === selectedModel; // Set selected attribute
+        return option;
     });
+
+    // Append options to the select element
+    modelSelect.append(...options);
 }
 
 async function initialConfig() {
     // load and render provider from store as default
+    // provider from setting config should be lowercase
     const provider = await settingsService.loadDefaultProvider();
     providerSelect.value = provider;
 
