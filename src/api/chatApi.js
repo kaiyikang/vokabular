@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 import axios from "axios";
 dotenv.config();
 
-PROVIDERS = ["openai", "openrouter", "deepseek", "anthropic"];
-
 // TODO: API should not know configuration
 export function createChatApi(config = {}) {
     function getClient(provider, apiKey) {
@@ -39,9 +37,7 @@ export function createChatApi(config = {}) {
                     client = new Anthropic(baseClientOptions);
                     break;
                 default:
-                    const errorMessage = `Unsupported provider: ${provider} and only ${PROVIDERS.join(
-                        ", ",
-                    )} are supported.`;
+                    const errorMessage = `Unsupported provider: ${provider} and only "openai", "openrouter", "deepseek", "anthropic" are supported.`;
                     console.error(errorMessage);
                     throw new Error(errorMessage);
             }

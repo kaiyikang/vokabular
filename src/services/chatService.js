@@ -1,4 +1,4 @@
-import { createChatApi, PROVIDERS } from "../api/chatApi.js";
+import { createChatApi } from "../api/chatApi.js";
 
 export function createChatService(config) {
     const api = createChatApi(config);
@@ -55,7 +55,7 @@ export function createChatService(config) {
             return answer;
         },
         getProviders() {
-            return PROVIDERS;
+            return ["openai", "openrouter", "deepseek", "anthropic"];
         },
         async testConnection(provider, apiKey) {
             const result = await api.testConnectionByProvider(provider, apiKey);
