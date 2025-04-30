@@ -54,14 +54,11 @@ inputSentence.addEventListener("dblclick", async (event) => {
 
     try {
         lockUI();
-        console.log("> selectedWord: " + selectedWord);
-        console.log("> inputPhrase: " + inputPhrase);
-        const response = DEBUG
-            ? "TEST"
-            : await window.services.chat.generateWordExplanation(
-                  inputPhrase,
-                  selectedWord,
-              );
+        const response = await window.services.chat.generateWordExplanation(
+            inputPhrase,
+            selectedWord,
+        );
+        console.log("Response:", response);
         inputSentence.value = inputPhrase
             .replace(/<[^>]*>/g, "")
             .replace(new RegExp(`(${selectedWord})`, "gi"), "<b>$1</b>");

@@ -4,19 +4,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 dotenv.config();
 
-function validateClient(client, name) {
-    if (!client) {
-        throw new Error(`${name} API client is not configured!`);
-    }
-
-    if (!client.chat || !client.chat.completions) {
-        throw new Error(
-            `${name} API client is not properly initialized. Check your API key.`,
-        );
-    }
-
-    return true;
-}
+PROVIDERS = ["openai", "openrouter", "deepseek", "anthropic"];
 
 // TODO: API should not know configuration
 export function createChatApi(config = {}) {
@@ -51,7 +39,9 @@ export function createChatApi(config = {}) {
                     client = new Anthropic(baseClientOptions);
                     break;
                 default:
-                    const errorMessage = `Unsupported provider: ${provider}`;
+                    const errorMessage = `Unsupported provider: ${provider} and only ${PROVIDERS.join(
+                        ", ",
+                    )} are supported.`;
                     console.error(errorMessage);
                     throw new Error(errorMessage);
             }
@@ -76,16 +66,32 @@ export function createChatApi(config = {}) {
         const client = getClient(provider, apiKey);
 
         try {
-            const completion = await client.chat.completions.create({
-                messages: [
-                    {
-                        role: "user",
-                        content: promptContent,
-                    },
-                ],
-                model: model,
-            });
-            return completion.choices[0].message.content;
+            if (provider === "anthropic") {
+                // Anthropic API
+                const completion = await client.messages.create({
+                    messages: [
+                        {
+                            role: "user",
+                            content: promptContent,
+                        },
+                    ],
+                    model: model,
+                    max_tokens: 1024, // can be adjusted as needed
+                });
+                return completion.content[0].text;
+            } else {
+                // OpenAI or other providers compatible with OpenAI API
+                const completion = await client.chat.completions.create({
+                    messages: [
+                        {
+                            role: "user",
+                            content: promptContent,
+                        },
+                    ],
+                    model: model,
+                });
+                return completion.choices[0].message.content;
+            }
         } catch (error) {
             console.error(
                 `Chat API call failed for provider ${provider}:`,
