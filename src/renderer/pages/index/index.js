@@ -58,7 +58,6 @@ inputSentence.addEventListener("dblclick", async (event) => {
             inputPhrase,
             selectedWord,
         );
-        console.log("Response:", response);
         inputSentence.value = inputPhrase
             .replace(/<[^>]*>/g, "")
             .replace(new RegExp(`(${selectedWord})`, "gi"), "<b>$1</b>");
